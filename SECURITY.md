@@ -44,7 +44,6 @@ This document outlines the security measures implemented in the Gbawo Finance Co
 - **Header Validation**: Checks for suspicious user agents and injection patterns
 - **Path Validation**: Detects path traversal and suspicious path access
 - **Request Pattern Analysis**: Identifies potentially malicious request patterns
-- **MongoDB Injection Protection**: Express-mongo-sanitize middleware
 
 ### 7. Content Compression & Performance
 - **Gzip Compression**: Reduces bandwidth usage and improves performance
