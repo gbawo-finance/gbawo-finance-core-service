@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SequelizeModuleOptions, SequelizeOptionsFactory } from '@nestjs/sequelize';
+import {
+  SequelizeModuleOptions,
+  SequelizeOptionsFactory,
+} from '@nestjs/sequelize';
 
 @Injectable()
 export class DatabaseConfigService implements SequelizeOptionsFactory {
-  constructor(private configService: ConfigService) { }
+  constructor(private configService: ConfigService) {}
 
   createSequelizeOptions(): SequelizeModuleOptions {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
@@ -22,4 +25,4 @@ export class DatabaseConfigService implements SequelizeOptionsFactory {
       logging: isDevelopment ? console.log : false,
     };
   }
-} 
+}

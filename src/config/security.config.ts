@@ -66,28 +66,37 @@ export class SecurityConfigService {
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         allowedHeaders: [
-          'Content-Type', 
-          'Authorization', 
+          'Content-Type',
+          'Authorization',
           'X-Requested-With',
           'Accept',
           'Origin',
           'Cache-Control',
-          'X-File-Name'
+          'X-File-Name',
         ],
         maxAge: 86400, // 24 hours
       },
       validation: {
-        maxRequestSize: this.configService.get<number>('MAX_REQUEST_SIZE', 10 * 1024 * 1024), // 10MB
+        maxRequestSize: this.configService.get<number>(
+          'MAX_REQUEST_SIZE',
+          10 * 1024 * 1024,
+        ), // 10MB
         enableSanitization: true,
         strictValidation: isProduction,
       },
       monitoring: {
         logLevel: isDevelopment ? 'verbose' : 'log',
-        maxEventsInMemory: this.configService.get<number>('MAX_SECURITY_EVENTS', 1000),
+        maxEventsInMemory: this.configService.get<number>(
+          'MAX_SECURITY_EVENTS',
+          1000,
+        ),
         enableSecurityHeaders: true,
       },
       rateLimit: {
-        windowMs: this.configService.get<number>('RATE_LIMIT_WINDOW_MS', 15 * 60 * 1000), // 15 minutes
+        windowMs: this.configService.get<number>(
+          'RATE_LIMIT_WINDOW_MS',
+          15 * 60 * 1000,
+        ), // 15 minutes
         max: this.configService.get<number>('RATE_LIMIT_MAX_REQUESTS', 1000), // Higher limit for internal service
         skipSuccessfulRequests: false,
         skipFailedRequests: false,
@@ -96,7 +105,10 @@ export class SecurityConfigService {
   }
 
   private getAllowedOrigins(): string[] {
-    const customOrigins = this.configService.get<string>('CORS_ALLOWED_ORIGINS', '');
+    const customOrigins = this.configService.get<string>(
+      'CORS_ALLOWED_ORIGINS',
+      '',
+    );
     const baseOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
@@ -107,7 +119,9 @@ export class SecurityConfigService {
     ];
 
     if (customOrigins) {
-      const customOriginsList = customOrigins.split(',').map(origin => origin.trim());
+      const customOriginsList = customOrigins
+        .split(',')
+        .map((origin) => origin.trim());
       return [...baseOrigins, ...customOriginsList];
     }
 
@@ -123,7 +137,7 @@ export class SecurityConfigService {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for Swagger UI
         scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts for Swagger UI
-        imgSrc: ["'self'", "data:", "https:"],
+        imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'"],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
@@ -162,7 +176,7 @@ export class SecurityConfigService {
       /^fe80:/, // IPv6 link-local
     ];
 
-    return !internalRanges.some(range => range.test(ip));
+    return !internalRanges.some((range) => range.test(ip));
   }
 
   /**
@@ -178,4 +192,4 @@ export class SecurityConfigService {
       'X-DNS-Prefetch-Control': 'off',
     };
   }
-} 
+}

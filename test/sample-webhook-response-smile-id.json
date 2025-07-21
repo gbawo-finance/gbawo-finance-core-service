@@ -1,0 +1,44 @@
+{
+    "Actions": {
+        "Document_Check": "Passed",
+        "Human_Review_Compare": "Not Applicable",
+        "Human_Review_Document_Check": "Not Applicable",
+        "Human_Review_Liveness_Check": "Not Applicable",
+        "Liveness_Check": "Passed",
+        "Register_Selfie": "Passed",
+        "Return_Personal_Info": "Returned",
+        "Selfie_To_ID_Card_Compare": "Completed",
+        "Verify_Document": "Passed"
+    },
+    "Country": "NG",
+    "DOB": "2000-09-20",
+    "Document": "Not Available",
+    "ExpirationDate": "2023-09-20",
+    "FirstName": "Joe",
+    "FullName": "Joe Leo Doe",
+    "Gender": "M",
+    "IDNumber": "A00000000",
+    "IDType": "IDENTITY_CARD",
+    "ImageLinks": {
+        "id_card_back": "https://smile-results-test.s3.us-west-2.amazonaws.com/test/000000/7748/7748-0000000001-qls0x4kemz8htwzfxataif41nub1ei/SID_IDCard_Back.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIA4OAOFXPAPRZELCMF%2F20250720%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250720T104200Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEKP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIBXnbccS4r54l5Ww6prk3LHUEJTAJcp8sRWtP%2B%2BBUv%2F6AiEA9zj5BunFIOU6ez14%2BDXeltPXL5Tci6cjSZwFGH2jprMqkQMIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARADGgw4NTQ3MjgyMjc3NzYiDJFcdaNa5OdJv55TySrlAm%2BEZrF6FbFirBaFXB%2FzKt%2BQRizPiwXinhYxwV4T5D1kRil4MmLRJt3Fh0abGRpoiKlb7thHHfxw%2BaZNxWzCeOac4hPxGBgZNFi0QrzunWo%2FWCAuYoo1StfXXDjEyxAogHx%2B1YSyL8b%2B5%2B4Z9M9P93b1etSSyzQVLvxGW97hxKyIlz3HZEt50Cz05jonWmyvIJYT4CaKuso8kUlf4fsOl2beYO9vbVSsW4ffBCrUWXEM8BQGQJi9N7gcs5PUiuxLLjUrr4IbksvBAhUoRBEYqK4JHP3R3Ft6RrXWgH4R6QoS6EsgSCI9AyPSi3DtPRCz%2Ftoh1HrZHGC9M1pl1%2BnxeiS%2FIiO2ZNVIzMCxU7DVe5%2Fjj2DoJi7zWwGHy8ixlSpo9u2uQ%2BH1No8rr%2FP4AlRs6AcpAajMATXwNM1Ycpt%2FWflXRhWXGpPp9HFxD%2FegzBSsLEvs98AjCjkJykOq8WUIPNcXkU4akjD1j%2FPDBjqeASB1tARM8IIVIPsnllOx62%2BOEhVkPspsjqtObFqn56rHJ6KT09XcFg%2FeZIwQ4aiDT195FXvdEBYjBrQpwm2dHicfXfV%2B30V7wpVa2EqBCiygai0wghJTTvZ7TMFHnMhA%2BhKuNR4mj%2Fn6aGjFcpL%2BLL8VX1jy3wJ47MCrb9e9K6ernyWCo%2Ff9SdJ3zNvbr889OsqMzVWrHJJnI1sNk7Yj&X-Amz-Signature=f72f6517783f92bb5f33b8423df104135b83e2b7e4d8dbb74cea01c1e349228d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "id_card_image": "https://smile-results-test.s3.us-west-2.amazonaws.com/test/000000/7748/7748-0000000001-qls0x4kemz8htwzfxataif41nub1ei/SID_IDCard.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIA4OAOFXPAPRZELCMF%2F20250720%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250720T104200Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEKP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIBXnbccS4r54l5Ww6prk3LHUEJTAJcp8sRWtP%2B%2BBUv%2F6AiEA9zj5BunFIOU6ez14%2BDXeltPXL5Tci6cjSZwFGH2jprMqkQMIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARADGgw4NTQ3MjgyMjc3NzYiDJFcdaNa5OdJv55TySrlAm%2BEZrF6FbFirBaFXB%2FzKt%2BQRizPiwXinhYxwV4T5D1kRil4MmLRJt3Fh0abGRpoiKlb7thHHfxw%2BaZNxWzCeOac4hPxGBgZNFi0QrzunWo%2FWCAuYoo1StfXXDjEyxAogHx%2B1YSyL8b%2B5%2B4Z9M9P93b1etSSyzQVLvxGW97hxKyIlz3HZEt50Cz05jonWmyvIJYT4CaKuso8kUlf4fsOl2beYO9vbVSsW4ffBCrUWXEM8BQGQJi9N7gcs5PUiuxLLjUrr4IbksvBAhUoRBEYqK4JHP3R3Ft6RrXWgH4R6QoS6EsgSCI9AyPSi3DtPRCz%2Ftoh1HrZHGC9M1pl1%2BnxeiS%2FIiO2ZNVIzMCxU7DVe5%2Fjj2DoJi7zWwGHy8ixlSpo9u2uQ%2BH1No8rr%2FP4AlRs6AcpAajMATXwNM1Ycpt%2FWflXRhWXGpPp9HFxD%2FegzBSsLEvs98AjCjkJykOq8WUIPNcXkU4akjD1j%2FPDBjqeASB1tARM8IIVIPsnllOx62%2BOEhVkPspsjqtObFqn56rHJ6KT09XcFg%2FeZIwQ4aiDT195FXvdEBYjBrQpwm2dHicfXfV%2B30V7wpVa2EqBCiygai0wghJTTvZ7TMFHnMhA%2BhKuNR4mj%2Fn6aGjFcpL%2BLL8VX1jy3wJ47MCrb9e9K6ernyWCo%2Ff9SdJ3zNvbr889OsqMzVWrHJJnI1sNk7Yj&X-Amz-Signature=80c6ec08927d96824fd5f3a6c6087f3b234e3275d2292435dec9c975470d1843&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+        "selfie_image": "https://smile-results-test.s3.us-west-2.amazonaws.com/test/000000/7748/7748-0000000001-qls0x4kemz8htwzfxataif41nub1ei/SID_Preview_Full.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIA4OAOFXPAPRZELCMF%2F20250720%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250720T104200Z&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEKP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIBXnbccS4r54l5Ww6prk3LHUEJTAJcp8sRWtP%2B%2BBUv%2F6AiEA9zj5BunFIOU6ez14%2BDXeltPXL5Tci6cjSZwFGH2jprMqkQMIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARADGgw4NTQ3MjgyMjc3NzYiDJFcdaNa5OdJv55TySrlAm%2BEZrF6FbFirBaFXB%2FzKt%2BQRizPiwXinhYxwV4T5D1kRil4MmLRJt3Fh0abGRpoiKlb7thHHfxw%2BaZNxWzCeOac4hPxGBgZNFi0QrzunWo%2FWCAuYoo1StfXXDjEyxAogHx%2B1YSyL8b%2B5%2B4Z9M9P93b1etSSyzQVLvxGW97hxKyIlz3HZEt50Cz05jonWmyvIJYT4CaKuso8kUlf4fsOl2beYO9vbVSsW4ffBCrUWXEM8BQGQJi9N7gcs5PUiuxLLjUrr4IbksvBAhUoRBEYqK4JHP3R3Ft6RrXWgH4R6QoS6EsgSCI9AyPSi3DtPRCz%2Ftoh1HrZHGC9M1pl1%2BnxeiS%2FIiO2ZNVIzMCxU7DVe5%2Fjj2DoJi7zWwGHy8ixlSpo9u2uQ%2BH1No8rr%2FP4AlRs6AcpAajMATXwNM1Ycpt%2FWflXRhWXGpPp9HFxD%2FegzBSsLEvs98AjCjkJykOq8WUIPNcXkU4akjD1j%2FPDBjqeASB1tARM8IIVIPsnllOx62%2BOEhVkPspsjqtObFqn56rHJ6KT09XcFg%2FeZIwQ4aiDT195FXvdEBYjBrQpwm2dHicfXfV%2B30V7wpVa2EqBCiygai0wghJTTvZ7TMFHnMhA%2BhKuNR4mj%2Fn6aGjFcpL%2BLL8VX1jy3wJ47MCrb9e9K6ernyWCo%2Ff9SdJ3zNvbr889OsqMzVWrHJJnI1sNk7Yj&X-Amz-Signature=2af0ce71726e98518986f3f794a82fab6f83762ff611129aaa02903ed2eedd88&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    "IssuanceDate": "2018-09-20",
+    "KYCReceipt": "https://portal.usesmileid.com/api/v3/7748/job_result_summary/0000000001/generate_pdf?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqb2JfaWQiOiIwMDAwMDAwMDAxIiwicGFydG5lcl9pZCI6Ijc3NDgiLCJpYXQiOjE3NTMwMDgxMjAsImV4cCI6MTc2MDc4NDEyMH0.D0clIf7Hp52XnFxKcwfYQHynUjnL3Hf-alD60gEosq8&environment=test",
+    "LastName": "Doe",
+    "OtherName": "Not Available",
+    "PartnerParams": {
+        "job_id": "job-c7d51596-9322-42f9-af04-20ce3ded92e1",
+        "job_type": 6,
+        "link_id": "6b813823-78e3-4cb7-9ce8-f81b4a735793",
+        "user_id": "user-0bd3dc6b-56fe-4af2-9e33-233fb34adf2b"
+    },
+    "PhoneNumber2": "Not Available",
+    "ResultCode": "0810",
+    "ResultText": "Document Verified",
+    "SecondaryIDNumber": "00000000000",
+    "SmileJobID": "0000000001",
+    "signature": "u5P5GSUuhrqc3oFVg1pwfysT3J+cHIWpRuHt7lpN4xM=",
+    "timestamp": "2025-07-20T10:42:00.413Z"
+}

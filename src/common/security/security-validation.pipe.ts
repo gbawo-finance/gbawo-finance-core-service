@@ -1,8 +1,8 @@
 import {
-  Injectable,
   ArgumentMetadata,
-  ValidationPipe,
   BadRequestException,
+  Injectable,
+  ValidationPipe,
 } from '@nestjs/common';
 import { SecurityService } from './security.service';
 
@@ -20,20 +20,24 @@ export class SecurityValidationPipe extends ValidationPipe {
       forbidUnknownValues: true,
       disableErrorMessages: false,
       exceptionFactory: (errors) => {
-        const messages = errors.map(error => {
+        const messages = errors.map((error) => {
           const constraints = error.constraints || {};
           return {
             property: error.property,
-            value: error.value,
-            constraints: Object.values(constraints)
+            value: error.value as unknown,
+            constraints: Object.values(constraints),
           };
         });
 
         // Log validation failures for security monitoring
-        this.securityService.logSecurityEvent('VALIDATION_FAILED', {
-          errors: messages,
-          timestamp: new Date().toISOString(),
-        }, 'medium');
+        this.securityService.logSecurityEvent(
+          'VALIDATION_FAILED',
+          {
+            errors: messages,
+            timestamp: new Date().toISOString(),
+          },
+          'medium',
+        );
 
         return new BadRequestException({
           statusCode: 400,
@@ -44,10 +48,13 @@ export class SecurityValidationPipe extends ValidationPipe {
     });
   }
 
-  async transform(value: any, metadata: ArgumentMetadata) {
+  async transform(value: any, metadata: ArgumentMetadata): Promise<any> {
     // Sanitize input before validation
     if (value && typeof value === 'object') {
-      value = this.securityService.sanitizeInput(value);
+      value = this.securityService.sanitizeInput(value) as Record<
+        string,
+        unknown
+      >;
     }
 
     // Check for common security threats in the input
@@ -57,11 +64,14 @@ export class SecurityValidationPipe extends ValidationPipe {
     return super.transform(value, metadata);
   }
 
-  private validateForSecurityThreats(value: any, metadata: ArgumentMetadata): void {
+  private validateForSecurityThreats(
+    value: any,
+    metadata: ArgumentMetadata,
+  ): void {
     if (!value || typeof value !== 'object') return;
 
     const valueString = JSON.stringify(value);
-    
+
     // Check for potential injection attacks
     const dangerousPatterns = [
       /<script.*?>.*?<\/script>/gi,
@@ -79,14 +89,18 @@ export class SecurityValidationPipe extends ValidationPipe {
       /setInterval\s*\(/gi,
     ];
 
-    dangerousPatterns.forEach(pattern => {
+    dangerousPatterns.forEach((pattern) => {
       if (pattern.test(valueString)) {
-        this.securityService.logSecurityEvent('MALICIOUS_INPUT_DETECTED', {
-          pattern: pattern.source,
-          input: value,
-          metadata: metadata.type,
-          timestamp: new Date().toISOString(),
-        }, 'critical');
+        this.securityService.logSecurityEvent(
+          'MALICIOUS_INPUT_DETECTED',
+          {
+            pattern: pattern.source,
+            input: value as unknown,
+            metadata: metadata.type,
+            timestamp: new Date().toISOString(),
+          },
+          'critical',
+        );
 
         throw new BadRequestException('Invalid input detected');
       }
@@ -94,11 +108,15 @@ export class SecurityValidationPipe extends ValidationPipe {
 
     // Check for prototype pollution attempts
     if (this.hasPrototypePollution(value)) {
-      this.securityService.logSecurityEvent('PROTOTYPE_POLLUTION_ATTEMPT', {
-        input: value,
-        metadata: metadata.type,
-        timestamp: new Date().toISOString(),
-      }, 'critical');
+      this.securityService.logSecurityEvent(
+        'PROTOTYPE_POLLUTION_ATTEMPT',
+        {
+          input: value as unknown,
+          metadata: metadata.type,
+          timestamp: new Date().toISOString(),
+        },
+        'critical',
+      );
 
       throw new BadRequestException('Invalid object structure');
     }
@@ -108,20 +126,29 @@ export class SecurityValidationPipe extends ValidationPipe {
     if (!obj || typeof obj !== 'object') return false;
 
     const dangerousKeys = ['__proto__', 'constructor', 'prototype'];
-    
+
     return this.checkKeysRecursively(obj, dangerousKeys);
   }
 
   private checkKeysRecursively(obj: any, dangerousKeys: string[]): boolean {
     if (!obj || typeof obj !== 'object') return false;
 
-    for (const key of Object.keys(obj)) {
+    for (const key of Object.keys(obj as Record<string, unknown>)) {
       if (dangerousKeys.includes(key)) {
         return true;
       }
-      
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
-        if (this.checkKeysRecursively(obj[key], dangerousKeys)) {
+
+      if (
+        Object.prototype.hasOwnProperty.call(obj, key) &&
+        typeof (obj as Record<string, unknown>)[key] === 'object' &&
+        (obj as Record<string, unknown>)[key] !== null
+      ) {
+        if (
+          this.checkKeysRecursively(
+            (obj as Record<string, unknown>)[key],
+            dangerousKeys,
+          )
+        ) {
           return true;
         }
       }
@@ -129,4 +156,4 @@ export class SecurityValidationPipe extends ValidationPipe {
 
     return false;
   }
-} 
+}

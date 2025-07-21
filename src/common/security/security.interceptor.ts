@@ -1,13 +1,13 @@
 import {
+  BadRequestException,
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  BadRequestException,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Request } from 'express';
 import { SecurityService } from './security.service';
 
 @Injectable()
@@ -24,15 +24,21 @@ export class SecurityInterceptor implements NestInterceptor {
     }
 
     // Validate request headers
-    const headerValidation = this.securityService.validateRequestHeaders(request.headers);
+    const headerValidation = this.securityService.validateRequestHeaders(
+      request.headers,
+    );
     if (!headerValidation.isValid) {
-      this.securityService.logSecurityEvent('SECURITY_THREAT_DETECTED', {
-        ip: request.ip,
-        path: request.path,
-        method: request.method,
-        threats: headerValidation.threats,
-        userAgent: request.headers['user-agent'],
-      }, 'high');
+      this.securityService.logSecurityEvent(
+        'SECURITY_THREAT_DETECTED',
+        {
+          ip: request.ip,
+          path: request.path,
+          method: request.method,
+          threats: headerValidation.threats,
+          userAgent: request.headers['user-agent'],
+        },
+        'high',
+      );
 
       throw new BadRequestException('Invalid request headers detected');
     }
@@ -41,40 +47,70 @@ export class SecurityInterceptor implements NestInterceptor {
     this.validateRequestPattern(request);
 
     // Log request for monitoring
-    this.securityService.logSecurityEvent('REQUEST_RECEIVED', {
-      ip: request.ip,
-      path: request.path,
-      method: request.method,
-      userAgent: request.headers['user-agent'],
-      contentLength: request.headers['content-length'],
-    }, 'low');
+    this.securityService.logSecurityEvent(
+      'REQUEST_RECEIVED',
+      {
+        ip: request.ip,
+        path: request.path,
+        method: request.method,
+        userAgent: request.headers['user-agent'],
+        contentLength: request.headers['content-length'],
+      },
+      'low',
+    );
 
     return next.handle().pipe(
       tap({
         next: () => {
           const responseTime = Date.now() - startTime;
-          
+
           // Log successful requests
-          this.securityService.logSecurityEvent('REQUEST_COMPLETED', {
-            ip: request.ip,
-            path: request.path,
-            method: request.method,
-            responseTime,
-            status: 'success',
-          }, 'low');
+          this.securityService.logSecurityEvent(
+            'REQUEST_COMPLETED',
+            {
+              ip: request.ip,
+              path: request.path,
+              method: request.method,
+              responseTime,
+              status: 'success',
+            },
+            'low',
+          );
         },
-        error: (error) => {
+        error: (error: unknown) => {
           const responseTime = Date.now() - startTime;
-          
+
+          // Safely extract error message and status
+          let errorMessage = 'Unknown error';
+          let errorStatus = 500;
+          if (typeof error === 'object' && error !== null) {
+            if (
+              'message' in error &&
+              typeof (error as { message?: unknown }).message === 'string'
+            ) {
+              errorMessage = (error as { message: string }).message;
+            }
+            if (
+              'status' in error &&
+              typeof (error as { status?: unknown }).status === 'number'
+            ) {
+              errorStatus = (error as { status: number }).status;
+            }
+          }
+
           // Log failed requests
-          this.securityService.logSecurityEvent('REQUEST_FAILED', {
-            ip: request.ip,
-            path: request.path,
-            method: request.method,
-            responseTime,
-            error: error.message,
-            status: error.status || 500,
-          }, 'medium');
+          this.securityService.logSecurityEvent(
+            'REQUEST_FAILED',
+            {
+              ip: request.ip,
+              path: request.path,
+              method: request.method,
+              responseTime,
+              error: errorMessage,
+              status: errorStatus,
+            },
+            'medium',
+          );
         },
       }),
     );
@@ -82,13 +118,21 @@ export class SecurityInterceptor implements NestInterceptor {
 
   private validateRequestPattern(request: Request): void {
     // Check request size
-    const contentLength = parseInt(request.headers['content-length'] || '0', 10);
-    if (contentLength > 10 * 1024 * 1024) { // 10MB limit
-      this.securityService.logSecurityEvent('OVERSIZED_REQUEST', {
-        ip: request.ip,
-        path: request.path,
-        contentLength,
-      }, 'medium');
+    const contentLength = parseInt(
+      request.headers['content-length'] || '0',
+      10,
+    );
+    if (contentLength > 10 * 1024 * 1024) {
+      // 10MB limit
+      this.securityService.logSecurityEvent(
+        'OVERSIZED_REQUEST',
+        {
+          ip: request.ip,
+          path: request.path,
+          contentLength,
+        },
+        'medium',
+      );
       throw new BadRequestException('Request too large');
     }
 
@@ -103,13 +147,17 @@ export class SecurityInterceptor implements NestInterceptor {
       /\.(php|asp|jsp)$/i, // Script files (if not expected)
     ];
 
-    if (suspiciousPatterns.some(pattern => pattern.test(request.path))) {
-      this.securityService.logSecurityEvent('SUSPICIOUS_PATH_ACCESS', {
-        ip: request.ip,
-        path: request.path,
-        method: request.method,
-        userAgent: request.headers['user-agent'],
-      }, 'high');
+    if (suspiciousPatterns.some((pattern) => pattern.test(request.path))) {
+      this.securityService.logSecurityEvent(
+        'SUSPICIOUS_PATH_ACCESS',
+        {
+          ip: request.ip,
+          path: request.path,
+          method: request.method,
+          userAgent: request.headers['user-agent'],
+        },
+        'high',
+      );
     }
 
     // Check for SQL injection patterns in query parameters
@@ -125,14 +173,18 @@ export class SecurityInterceptor implements NestInterceptor {
         /script>/i,
       ];
 
-      sqlPatterns.forEach(pattern => {
+      sqlPatterns.forEach((pattern) => {
         if (pattern.test(queryString)) {
-          this.securityService.logSecurityEvent('SQL_INJECTION_ATTEMPT', {
-            ip: request.ip,
-            path: request.path,
-            query: request.query,
-            userAgent: request.headers['user-agent'],
-          }, 'critical');
+          this.securityService.logSecurityEvent(
+            'SQL_INJECTION_ATTEMPT',
+            {
+              ip: request.ip,
+              path: request.path,
+              query: request.query,
+              userAgent: request.headers['user-agent'],
+            },
+            'critical',
+          );
           throw new BadRequestException('Invalid request parameters');
         }
       });
@@ -142,11 +194,15 @@ export class SecurityInterceptor implements NestInterceptor {
     const clientIP = request.ip || '127.0.0.1';
     if (!this.securityService.isInternalIP(clientIP)) {
       // For external IPs, we might want to implement stricter controls
-      this.securityService.logSecurityEvent('EXTERNAL_IP_ACCESS', {
-        ip: clientIP,
-        path: request.path,
-        method: request.method,
-      }, 'medium');
+      this.securityService.logSecurityEvent(
+        'EXTERNAL_IP_ACCESS',
+        {
+          ip: clientIP,
+          path: request.path,
+          method: request.method,
+        },
+        'medium',
+      );
     }
   }
-} 
+}

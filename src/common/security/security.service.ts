@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 export interface SecurityEvent {
   type: string;
-  data: any;
+  data: Record<string, unknown> | string | number | boolean | null;
   timestamp?: string;
   severity?: 'low' | 'medium' | 'high' | 'critical';
 }
@@ -19,7 +19,11 @@ export class SecurityService {
   /**
    * Log security events for monitoring and audit purposes
    */
-  logSecurityEvent(type: string, data: any, severity: 'low' | 'medium' | 'high' | 'critical' = 'medium'): void {
+  logSecurityEvent(
+    type: string,
+    data: Record<string, unknown> | string | number | boolean | null,
+    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium',
+  ): void {
     const event: SecurityEvent = {
       type,
       data,
@@ -29,7 +33,7 @@ export class SecurityService {
 
     // Add to in-memory storage (for recent events)
     this.securityEvents.push(event);
-    
+
     // Maintain max events in memory
     if (this.securityEvents.length > this.maxEventsInMemory) {
       this.securityEvents.shift();
@@ -55,7 +59,10 @@ export class SecurityService {
     }
 
     // In production, you might want to send to external monitoring system
-    if (this.configService.get('NODE_ENV') === 'production' && severity === 'critical') {
+    if (
+      this.configService.get('NODE_ENV') === 'production' &&
+      severity === 'critical'
+    ) {
       this.handleCriticalSecurityEvent(event);
     }
   }
@@ -71,36 +78,56 @@ export class SecurityService {
    * Get security events by type
    */
   getSecurityEventsByType(type: string): SecurityEvent[] {
-    return this.securityEvents.filter(event => event.type === type);
+    return this.securityEvents.filter((event) => event.type === type);
   }
 
   /**
    * Validate request headers for security threats
    */
-  validateRequestHeaders(headers: Record<string, any>): { isValid: boolean; threats: string[] } {
+  validateRequestHeaders(headers: Record<string, any>): {
+    isValid: boolean;
+    threats: string[];
+  } {
     const threats: string[] = [];
 
     // Check for suspicious user agents
-    const userAgent = headers['user-agent']?.toLowerCase() || '';
+    const userAgentRaw: string = String(headers['user-agent']);
+    const userAgent =
+      typeof userAgentRaw === 'string' ? userAgentRaw.toLowerCase() : '';
     const suspiciousPatterns = [
-      'sqlmap', 'nikto', 'nessus', 'burp', 'zap', 'gobuster', 'dirb',
-      'scanner', 'bot', 'crawler'
+      'sqlmap',
+      'nikto',
+      'nessus',
+      'burp',
+      'zap',
+      'gobuster',
+      'dirb',
+      'scanner',
+      'bot',
+      'crawler',
     ];
 
-    if (suspiciousPatterns.some(pattern => userAgent.includes(pattern))) {
+    if (suspiciousPatterns.some((pattern) => userAgent.includes(pattern))) {
       threats.push('SUSPICIOUS_USER_AGENT');
     }
 
     // Check for injection patterns in headers
     const injectionPatterns = [
-      /<script/i, /javascript:/i, /vbscript:/i, /onload=/i, /onerror=/i,
-      /union.*select/i, /drop.*table/i, /insert.*into/i, /delete.*from/i,
+      /<script/i,
+      /javascript:/i,
+      /vbscript:/i,
+      /onload=/i,
+      /onerror=/i,
+      /union.*select/i,
+      /drop.*table/i,
+      /insert.*into/i,
+      /delete.*from/i,
       /\.\./g, // Path traversal
     ];
 
     Object.entries(headers).forEach(([key, value]) => {
       if (typeof value === 'string') {
-        injectionPatterns.forEach(pattern => {
+        injectionPatterns.forEach((pattern) => {
           if (pattern.test(value)) {
             threats.push(`INJECTION_ATTEMPT_IN_${key.toUpperCase()}`);
           }
@@ -109,19 +136,23 @@ export class SecurityService {
     });
 
     // Check for oversized headers
-    Object.entries(headers).forEach(([key, value]) => {
+    Object.entries(headers).forEach(([, value]) => {
       if (typeof value === 'string' && value.length > 8192) {
         threats.push('OVERSIZED_HEADER');
       }
     });
 
     if (threats.length > 0) {
-      this.logSecurityEvent('HEADER_VALIDATION_FAILED', { threats, headers }, 'high');
+      this.logSecurityEvent(
+        'HEADER_VALIDATION_FAILED',
+        { threats, headers },
+        'high',
+      );
     }
 
     return {
       isValid: threats.length === 0,
-      threats
+      threats,
     };
   }
 
@@ -138,12 +169,12 @@ export class SecurityService {
     }
 
     if (Array.isArray(input)) {
-      return input.map(item => this.sanitizeInput(item));
+      return input.map((item) => this.sanitizeInput(item));
     }
 
     if (typeof input === 'object' && input !== null) {
       const sanitized: any = {};
-      Object.keys(input).forEach(key => {
+      Object.keys(input).forEach((key) => {
         sanitized[key] = this.sanitizeInput(input[key]);
       });
       return sanitized;
@@ -167,7 +198,7 @@ export class SecurityService {
       /^fe80:/, // IPv6 link-local
     ];
 
-    return internalRanges.some(range => range.test(ip));
+    return internalRanges.some((range) => range.test(ip));
   }
 
   private handleCriticalSecurityEvent(event: SecurityEvent): void {
@@ -176,11 +207,11 @@ export class SecurityService {
     // - Block suspicious IPs
     // - Trigger automated responses
     // - Send to SIEM system
-    
+
     this.logger.error(`CRITICAL SECURITY EVENT: ${event.type}`, {
       event,
       action: 'ALERT_SENT',
-      service: 'gbawo-finance-core'
+      service: 'gbawo-finance-core',
     });
   }
-} 
+}

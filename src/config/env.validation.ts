@@ -1,5 +1,12 @@
 import { plainToInstance, Transform } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsString, IsOptional, validateSync } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  validateSync,
+} from 'class-validator';
 
 enum Environment {
   Development = 'development',
@@ -12,7 +19,7 @@ export class EnvironmentVariables {
   NODE_ENV: Environment;
 
   @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => parseInt(String(value), 10))
   PORT: number;
 
   @IsString()
@@ -20,7 +27,7 @@ export class EnvironmentVariables {
   DB_HOST: string;
 
   @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => parseInt(String(value), 10))
   DB_PORT: number;
 
   @IsString()
@@ -45,12 +52,12 @@ export class EnvironmentVariables {
 
   @IsOptional()
   @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => parseInt(String(value), 10))
   MAX_REQUEST_SIZE?: number;
 
   @IsOptional()
   @IsNumber()
-  @Transform(({ value }) => parseInt(value, 10))
+  @Transform(({ value }) => parseInt(String(value), 10))
   MAX_SECURITY_EVENTS?: number;
 }
 
@@ -71,4 +78,4 @@ export function validateEnvironment(config: Record<string, unknown>) {
   }
 
   return validatedConfig;
-} 
+}

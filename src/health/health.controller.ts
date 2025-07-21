@@ -1,8 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  HealthCheckService,
   HealthCheck,
+  HealthCheckService,
   SequelizeHealthIndicator,
 } from '@nestjs/terminus';
 
@@ -18,7 +18,8 @@ export class HealthController {
   @HealthCheck()
   @ApiOperation({
     summary: 'Comprehensive health check',
-    description: 'Performs a comprehensive health check including database connectivity'
+    description:
+      'Performs a comprehensive health check including database connectivity',
   })
   @ApiResponse({
     status: 200,
@@ -28,20 +29,18 @@ export class HealthController {
         status: 'ok',
         info: { database: { status: 'up' } },
         error: {},
-        details: { database: { status: 'up' } }
-      }
-    }
+        details: { database: { status: 'up' } },
+      },
+    },
   })
   check() {
-    return this.health.check([
-      () => this.db.pingCheck('database'),
-    ]);
+    return this.health.check([() => this.db.pingCheck('database')]);
   }
 
   @Get('simple')
   @ApiOperation({
     summary: 'Simple health check',
-    description: 'Returns a simple health status with timestamp'
+    description: 'Returns a simple health status with timestamp',
   })
   @ApiResponse({
     status: 200,
@@ -50,9 +49,9 @@ export class HealthController {
       example: {
         status: 'ok',
         timestamp: '2025-01-19T19:13:33.172Z',
-        service: 'gbawo-finance-core-service'
-      }
-    }
+        service: 'gbawo-finance-core-service',
+      },
+    },
   })
   simple() {
     return {
@@ -61,4 +60,4 @@ export class HealthController {
       service: 'gbawo-finance-core-service',
     };
   }
-} 
+}
