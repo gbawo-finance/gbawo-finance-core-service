@@ -25,11 +25,17 @@ export class ApiResponseDto<T = any> {
     this.data = data;
   }
 
-  static success<T>(data?: T, message: string = 'Request completed successfully'): ApiResponseDto<T> {
+  static success<T>(
+    data?: T,
+    message: string = 'Request completed successfully',
+  ): ApiResponseDto<T> {
     return new ApiResponseDto(true, message, data);
   }
 
-  static error(message: string = 'An error occurred', data?: any): ApiResponseDto {
+  static error(
+    message: string = 'An error occurred',
+    data?: any,
+  ): ApiResponseDto {
     return new ApiResponseDto(false, message, data);
   }
-} 
+}

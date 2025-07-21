@@ -1,14 +1,14 @@
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { SecurityService } from '../security/security.service';
 import { ApiResponseDto } from '../dto/api-response.dto';
+import { SecurityService } from '../security/security.service';
 
 @Catch()
 export class SecurityExceptionFilter implements ExceptionFilter {
@@ -42,12 +42,13 @@ export class SecurityExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object') {
         const responseObj = exceptionResponse as any;
-        message = responseObj.message || responseObj.error || 'An error occurred';
+        message =
+          responseObj.message || responseObj.error || 'An error occurred';
         errorData = this.sanitizeErrorData(responseObj);
       }
 
@@ -65,10 +66,13 @@ export class SecurityExceptionFilter implements ExceptionFilter {
       // Handle non-HTTP exceptions
       severity = 'critical';
       message = 'Internal server error'; // Don't expose internal error details
-      
+
       // Log the actual error internally
-      this.logger.error(`Unhandled exception: ${exception.message}`, exception.stack);
-      
+      this.logger.error(
+        `Unhandled exception: ${exception.message}`,
+        exception.stack,
+      );
+
       // Only include error details in development
       if (process.env.NODE_ENV === 'development') {
         errorData = {
@@ -79,15 +83,19 @@ export class SecurityExceptionFilter implements ExceptionFilter {
     }
 
     // Log security event
-    this.securityService.logSecurityEvent('EXCEPTION_OCCURRED', {
-      ip: request.ip,
-      path: request.path,
-      method: request.method,
-      statusCode: status,
-      errorType: exception.constructor.name,
-      userAgent: request.headers['user-agent'],
-      timestamp: new Date().toISOString(),
-    }, severity);
+    this.securityService.logSecurityEvent(
+      'EXCEPTION_OCCURRED',
+      {
+        ip: request.ip,
+        path: request.path,
+        method: request.method,
+        statusCode: status,
+        errorType: exception.constructor.name,
+        userAgent: request.headers['user-agent'],
+        timestamp: new Date().toISOString(),
+      },
+      severity,
+    );
 
     // Check for potential security attacks based on error patterns
     this.detectSecurityAttacks(exception, request);
@@ -105,8 +113,16 @@ export class SecurityExceptionFilter implements ExceptionFilter {
     // Remove sensitive information from error responses
     const sanitized = { ...errorData };
     const sensitiveKeys = [
-      'password', 'token', 'secret', 'key', 'authorization',
-      'cookie', 'session', 'auth', 'credential', 'private'
+      'password',
+      'token',
+      'secret',
+      'key',
+      'authorization',
+      'cookie',
+      'session',
+      'auth',
+      'credential',
+      'private',
     ];
 
     const sanitizeRecursive = (obj: any): any => {
@@ -114,10 +130,10 @@ export class SecurityExceptionFilter implements ExceptionFilter {
 
       const result: any = Array.isArray(obj) ? [] : {};
 
-      Object.keys(obj).forEach(key => {
+      Object.keys(obj).forEach((key) => {
         const lowerKey = key.toLowerCase();
-        
-        if (sensitiveKeys.some(sensitive => lowerKey.includes(sensitive))) {
+
+        if (sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive))) {
           result[key] = '[REDACTED]';
         } else if (typeof obj[key] === 'object') {
           result[key] = sanitizeRecursive(obj[key]);
@@ -139,47 +155,69 @@ export class SecurityExceptionFilter implements ExceptionFilter {
 
     // Detect potential SQL injection attempts
     if (errorMessage.includes('sql') || errorMessage.includes('database')) {
-      this.securityService.logSecurityEvent('POTENTIAL_SQL_INJECTION', {
-        ip: request.ip,
-        path,
-        error: exception.message,
-        userAgent,
-        query: request.query,
-        body: request.body,
-      }, 'critical');
-    }
-
-    // Detect path traversal attempts
-    if (errorMessage.includes('no such file') || errorMessage.includes('cannot read')) {
-      if (path.includes('..') || path.includes('%2e%2e')) {
-        this.securityService.logSecurityEvent('PATH_TRAVERSAL_ATTEMPT', {
+      this.securityService.logSecurityEvent(
+        'POTENTIAL_SQL_INJECTION',
+        {
           ip: request.ip,
           path,
           error: exception.message,
           userAgent,
-        }, 'high');
+          query: request.query,
+          body: request.body,
+        },
+        'critical',
+      );
+    }
+
+    // Detect path traversal attempts
+    if (
+      errorMessage.includes('no such file') ||
+      errorMessage.includes('cannot read')
+    ) {
+      if (path.includes('..') || path.includes('%2e%2e')) {
+        this.securityService.logSecurityEvent(
+          'PATH_TRAVERSAL_ATTEMPT',
+          {
+            ip: request.ip,
+            path,
+            error: exception.message,
+            userAgent,
+          },
+          'high',
+        );
       }
     }
 
     // Detect potential XSS attempts
-    if (errorMessage.includes('script') || errorMessage.includes('javascript')) {
-      this.securityService.logSecurityEvent('POTENTIAL_XSS_ATTEMPT', {
-        ip: request.ip,
-        path,
-        error: exception.message,
-        userAgent,
-        body: request.body,
-      }, 'high');
+    if (
+      errorMessage.includes('script') ||
+      errorMessage.includes('javascript')
+    ) {
+      this.securityService.logSecurityEvent(
+        'POTENTIAL_XSS_ATTEMPT',
+        {
+          ip: request.ip,
+          path,
+          error: exception.message,
+          userAgent,
+          body: request.body,
+        },
+        'high',
+      );
     }
 
     // Detect brute force patterns
     if (exception.status === 401 || exception.status === 403) {
-      this.securityService.logSecurityEvent('AUTHENTICATION_FAILURE', {
-        ip: request.ip,
-        path,
-        userAgent,
-        statusCode: exception.status,
-      }, 'medium');
+      this.securityService.logSecurityEvent(
+        'AUTHENTICATION_FAILURE',
+        {
+          ip: request.ip,
+          path,
+          userAgent,
+          statusCode: exception.status,
+        },
+        'medium',
+      );
     }
   }
-} 
+}
