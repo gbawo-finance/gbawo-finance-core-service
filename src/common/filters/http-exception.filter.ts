@@ -15,19 +15,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest();
 
-    // Skip filter for health endpoints to preserve their original format
-    if (request.url.startsWith('/health')) {
-      if (exception instanceof HttpException) {
-        response.status(exception.getStatus()).json(exception.getResponse());
-      } else {
-        response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Internal server error',
-        });
-      }
-      return;
-    }
-
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errorData: any = null;

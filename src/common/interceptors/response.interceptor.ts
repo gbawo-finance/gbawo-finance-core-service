@@ -16,14 +16,6 @@ export class ResponseInterceptor<T>
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<ApiResponseDto<T>> {
-    const request = context.switchToHttp().getRequest();
-    const path = request.url;
-
-    // Skip interceptor for health endpoints as they have their own format
-    if (path.startsWith('/health')) {
-      return next.handle();
-    }
-
     return next.handle().pipe(
       map((data) => {
         // If the data is already in our standard format, return it as is
