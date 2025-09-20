@@ -11,7 +11,10 @@ import {
   FiatDisburseDto,
   FiatDisburseResponseDto,
 } from '../common/dto/fiat.dto';
-import { FiatExchangeDto, TransactionResponseDto } from '../common/dto/transactions.dto';
+import {
+  FiatExchangeDto,
+  TransactionResponseDto,
+} from '../common/dto/transactions.dto';
 import { ApiResponseDto } from '../common/dto/api-response.dto';
 
 @ApiTags('Fiat')
@@ -134,7 +137,8 @@ export class FiatController {
   async createFiatExchange(
     @Body() fiatExchangeDto: FiatExchangeDto,
   ): Promise<ApiResponseDto<TransactionResponseDto>> {
-    const transaction = await this.fiatService.createFiatExchange(fiatExchangeDto);
+    const transaction =
+      await this.fiatService.createFiatExchange(fiatExchangeDto);
     return ApiResponseDto.success(
       transaction,
       'Fiat exchange transaction created successfully',

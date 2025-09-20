@@ -10,10 +10,20 @@ import {
   ReceiptComplianceDto,
   ReceiptDownloadLinksDto,
 } from '../common/dto/transactions.dto';
+import {
+  TransactionStatus,
+  ActivityType,
+  TimelineStep,
+  TimelineStepStatus,
+  KycLevel,
+  KycStatus,
+  FiatCurrency,
+  CryptoCurrency,
+  CryptoNetwork,
+} from '../common/enums';
 
 @Injectable()
 export class TransactionsService {
-
   async getAllTransactions(): Promise<TransactionStatusDto[]> {
     // TODO: Implement get all transactions
     // This would typically involve:
@@ -26,40 +36,40 @@ export class TransactionsService {
       {
         gbawo_transaction_id: 'gbawo_txn_001',
         reference_code: 'REF_001',
-        status: 'completed',
-        activity_type: 'onramp',
+        status: TransactionStatus.COMPLETED,
+        activity_type: ActivityType.ONRAMP,
         user_info: {
           user_id: 'usr_123456789',
-          kyc_level: '1',
-          kyc_status: 'verified',
+          kyc_level: KycLevel.LEVEL_1,
+          kyc_status: KycStatus.VERIFIED,
         },
         created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
         completed_at: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
         details: {
           fiat_amount: 100.5,
-          fiat_currency: 'USD',
+          fiat_currency: FiatCurrency.USD,
           crypto_amount: '0.001',
-          crypto_currency: 'BTC',
-          crypto_network: 'bitcoin',
+          crypto_currency: CryptoCurrency.BTC,
+          crypto_network: CryptoNetwork.BITCOIN,
           exchange_rate: 0.000024,
           fees: 2.5,
         },
         timeline: [
           {
-            step: 'transaction_created',
-            status: 'completed',
+            step: TimelineStep.TRANSACTION_CREATED,
+            status: TimelineStepStatus.COMPLETED,
             timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
             duration_ms: 500,
           },
           {
-            step: 'payment_received',
-            status: 'completed',
+            step: TimelineStep.PAYMENT_RECEIVED,
+            status: TimelineStepStatus.COMPLETED,
             timestamp: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
             duration_ms: 30000,
           },
           {
-            step: 'crypto_sent',
-            status: 'completed',
+            step: TimelineStep.CRYPTO_SENT,
+            status: TimelineStepStatus.COMPLETED,
             timestamp: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
             duration_ms: 60000,
           },
@@ -68,39 +78,39 @@ export class TransactionsService {
       {
         gbawo_transaction_id: 'gbawo_txn_002',
         reference_code: 'REF_002',
-        status: 'processing',
-        activity_type: 'offramp',
+        status: TransactionStatus.PROCESSING,
+        activity_type: ActivityType.OFFRAMP,
         user_info: {
           user_id: 'usr_987654321',
-          kyc_level: '2',
-          kyc_status: 'verified',
+          kyc_level: KycLevel.LEVEL_2,
+          kyc_status: KycStatus.VERIFIED,
         },
         created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         details: {
           crypto_amount: '0.002',
-          crypto_currency: 'ETH',
-          crypto_network: 'ethereum',
+          crypto_currency: CryptoCurrency.ETH,
+          crypto_network: CryptoNetwork.ETHEREUM,
           fiat_amount: 5.0,
-          fiat_currency: 'USD',
+          fiat_currency: FiatCurrency.USD,
           exchange_rate: 2500.0,
           fees: 1.5,
         },
         timeline: [
           {
-            step: 'transaction_created',
-            status: 'completed',
+            step: TimelineStep.TRANSACTION_CREATED,
+            status: TimelineStepStatus.COMPLETED,
             timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
             duration_ms: 500,
           },
           {
-            step: 'crypto_received',
-            status: 'completed',
+            step: TimelineStep.CRYPTO_RECEIVED,
+            status: TimelineStepStatus.COMPLETED,
             timestamp: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
             duration_ms: 300000,
           },
           {
-            step: 'processing_disbursement',
-            status: 'in_progress',
+            step: TimelineStep.PROCESSING_DISBURSEMENT,
+            status: TimelineStepStatus.IN_PROGRESS,
             timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
           },
         ],
@@ -108,30 +118,30 @@ export class TransactionsService {
       {
         gbawo_transaction_id: 'gbawo_txn_003',
         reference_code: 'REF_003',
-        status: 'pending',
-        activity_type: 'fiat_exchange',
+        status: TransactionStatus.PENDING,
+        activity_type: ActivityType.FIAT_EXCHANGE,
         user_info: {
           user_id: 'usr_456789123',
-          kyc_level: '1',
-          kyc_status: 'verified',
+          kyc_level: KycLevel.LEVEL_1,
+          kyc_status: KycStatus.VERIFIED,
         },
         created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
         details: {
           fiat_amount: 1000.0,
-          fiat_currency: 'USD',
+          fiat_currency: FiatCurrency.USD,
           exchange_rate: 0.85,
           fees: 5.0,
         },
         timeline: [
           {
-            step: 'transaction_created',
-            status: 'completed',
+            step: TimelineStep.TRANSACTION_CREATED,
+            status: TimelineStepStatus.COMPLETED,
             timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
             duration_ms: 500,
           },
           {
-            step: 'waiting_payment',
-            status: 'in_progress',
+            step: TimelineStep.WAITING_PAYMENT,
+            status: TimelineStepStatus.IN_PROGRESS,
             timestamp: new Date(Date.now() - 29 * 60 * 1000).toISOString(),
           },
         ],
@@ -154,38 +164,39 @@ export class TransactionsService {
     // 3. Update status if needed (check external systems)
     // 4. Return comprehensive status
 
+    await Promise.resolve(); // Simulate async operation
     const mockTimeline: TimelineStepDto[] = [
       {
-        step: 'transaction_created',
-        status: 'completed',
+        step: TimelineStep.TRANSACTION_CREATED,
+        status: TimelineStepStatus.COMPLETED,
         timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
         duration_ms: 500,
       },
       {
-        step: 'payment_received',
-        status: 'completed',
+        step: TimelineStep.PAYMENT_RECEIVED,
+        status: TimelineStepStatus.COMPLETED,
         timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         duration_ms: 30000,
       },
       {
-        step: 'processing_exchange',
-        status: 'in_progress',
+        step: TimelineStep.PROCESSING_EXCHANGE,
+        status: TimelineStepStatus.IN_PROGRESS,
         timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
       },
     ];
 
     const userInfo: UserInfoDto = {
       user_id: 'usr_123456789',
-      kyc_level: '1',
-      kyc_status: 'verified',
+      kyc_level: KycLevel.LEVEL_1,
+      kyc_status: KycStatus.VERIFIED,
     };
 
     const details: TransactionDetailsDto = {
       fiat_amount: 100.5,
-      fiat_currency: 'USD',
+      fiat_currency: FiatCurrency.USD,
       crypto_amount: '0.001',
-      crypto_currency: 'BTC',
-      crypto_network: 'bitcoin',
+      crypto_currency: CryptoCurrency.BTC,
+      crypto_network: CryptoNetwork.BITCOIN,
       exchange_rate: 0.000024,
       fees: 2.5,
     };
@@ -193,8 +204,8 @@ export class TransactionsService {
     const response: TransactionStatusDto = {
       gbawo_transaction_id: `gbawo_${transactionId}`,
       reference_code: `REF_${Date.now()}`,
-      status: 'processing',
-      activity_type: 'onramp',
+      status: TransactionStatus.PROCESSING,
+      activity_type: ActivityType.ONRAMP,
       user_info: userInfo,
       created_at: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
       details: details,
@@ -204,7 +215,9 @@ export class TransactionsService {
     return response;
   }
 
-  async getTransactionReceipt(transactionId: string): Promise<TransactionReceiptDto> {
+  async getTransactionReceipt(
+    transactionId: string,
+  ): Promise<TransactionReceiptDto> {
     // TODO: Implement transaction receipt generation
     // This would typically involve:
     // 1. Fetch transaction details from database
@@ -217,7 +230,7 @@ export class TransactionsService {
     // Generate receipt ID based on transaction ID and date
     const receiptDate = new Date();
     const receiptId = `RCP_${transactionId}_${receiptDate.toISOString().split('T')[0].replace(/-/g, '')}`;
-    
+
     // Mock transaction data - in production, this would come from database
     const transactionSummary: TransactionSummaryDto = {
       description: 'Fiat to Crypto Exchange',

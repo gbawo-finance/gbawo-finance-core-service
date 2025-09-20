@@ -8,6 +8,12 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  CryptoCurrency,
+  CryptoNetwork,
+  TransactionPriority,
+  CryptoTransferStatus,
+} from '../enums';
 
 export class CryptoTransferDto {
   @ApiProperty({
@@ -36,11 +42,11 @@ export class CryptoTransferDto {
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  currency: string;
+  @IsEnum(CryptoCurrency)
+  currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Recipient address',
@@ -52,19 +58,19 @@ export class CryptoTransferDto {
 
   @ApiProperty({
     description: 'Network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  @IsString()
-  @IsNotEmpty()
-  network: string;
+  @IsEnum(CryptoNetwork)
+  network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Transaction priority',
-    example: 'standard',
-    enum: ['low', 'standard', 'high'],
+    example: TransactionPriority.STANDARD,
+    enum: TransactionPriority,
   })
-  @IsEnum(['low', 'standard', 'high'])
-  priority: string;
+  @IsEnum(TransactionPriority)
+  priority: TransactionPriority;
 
   @ApiPropertyOptional({
     description: 'Additional metadata',
@@ -102,19 +108,19 @@ export class CryptoReceiveDto {
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  currency: string;
+  @IsEnum(CryptoCurrency)
+  currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  @IsString()
-  @IsNotEmpty()
-  network: string;
+  @IsEnum(CryptoNetwork)
+  network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Timeout in minutes',
@@ -136,9 +142,10 @@ export class CryptoReceiveDto {
 export class CryptoTransferResponseDto {
   @ApiProperty({
     description: 'Transfer status',
-    example: 'pending',
+    example: CryptoTransferStatus.PENDING,
+    enum: CryptoTransferStatus,
   })
-  status: string;
+  status: CryptoTransferStatus;
 
   @ApiProperty({
     description: 'Gbawo transaction ID',
@@ -168,9 +175,10 @@ export class CryptoTransferResponseDto {
 export class CryptoReceiveResponseDto {
   @ApiProperty({
     description: 'Receive status',
-    example: 'waiting',
+    example: CryptoTransferStatus.WAITING,
+    enum: CryptoTransferStatus,
   })
-  status: string;
+  status: CryptoTransferStatus;
 
   @ApiProperty({
     description: 'Gbawo transaction ID',

@@ -6,9 +6,21 @@ import {
   IsOptional,
   IsObject,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  FiatCurrency,
+  CryptoCurrency,
+  CryptoNetwork,
+  TransactionStatus,
+  ActivityType,
+  TimelineStep,
+  TimelineStepStatus,
+  KycLevel,
+  KycStatus,
+} from '../enums';
 
 export class RecipientDetailsDto {
   @ApiProperty({
@@ -71,27 +83,27 @@ export class OnrampDto {
 
   @ApiProperty({
     description: 'Fiat currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  fiat_currency: string;
+  @IsEnum(FiatCurrency)
+  fiat_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  crypto_currency: string;
+  @IsEnum(CryptoCurrency)
+  crypto_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Crypto network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  @IsString()
-  @IsNotEmpty()
-  crypto_network: string;
+  @IsEnum(CryptoNetwork)
+  crypto_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Crypto destination address',
@@ -137,27 +149,27 @@ export class OfframpDto {
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  crypto_currency: string;
+  @IsEnum(CryptoCurrency)
+  crypto_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Crypto network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  @IsString()
-  @IsNotEmpty()
-  crypto_network: string;
+  @IsEnum(CryptoNetwork)
+  crypto_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Fiat currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  fiat_currency: string;
+  @IsEnum(FiatCurrency)
+  fiat_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Recipient bank details',
@@ -219,19 +231,19 @@ export class FiatExchangeDto {
 
   @ApiProperty({
     description: 'Source currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  source_currency: string;
+  @IsEnum(FiatCurrency)
+  source_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Target currency',
-    example: 'EUR',
+    example: FiatCurrency.EUR,
+    enum: FiatCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  target_currency: string;
+  @IsEnum(FiatCurrency)
+  target_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Recipient bank details',
@@ -301,35 +313,35 @@ export class CryptoExchangeDto {
 
   @ApiProperty({
     description: 'Source currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  source_currency: string;
+  @IsEnum(CryptoCurrency)
+  source_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Source network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  @IsString()
-  @IsNotEmpty()
-  source_network: string;
+  @IsEnum(CryptoNetwork)
+  source_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Target currency',
-    example: 'ETH',
+    example: CryptoCurrency.ETH,
+    enum: CryptoCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  target_currency: string;
+  @IsEnum(CryptoCurrency)
+  target_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Target network',
-    example: 'ethereum',
+    example: CryptoNetwork.ETHEREUM,
+    enum: CryptoNetwork,
   })
-  @IsString()
-  @IsNotEmpty()
-  target_network: string;
+  @IsEnum(CryptoNetwork)
+  target_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Target address',
@@ -381,9 +393,10 @@ export class PaymentDetailsDto {
 
   @ApiProperty({
     description: 'Currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  currency: string;
+  currency: FiatCurrency;
 }
 
 export class CryptoDetailsDto {
@@ -395,15 +408,17 @@ export class CryptoDetailsDto {
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  currency: string;
+  currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  network: string;
+  network: CryptoNetwork;
 
   @ApiPropertyOptional({
     description: 'Destination address',
@@ -433,15 +448,17 @@ export class CryptoDetailsDto {
 export class UserVerificationDto {
   @ApiProperty({
     description: 'KYC level',
-    example: '1',
+    example: KycLevel.LEVEL_1,
+    enum: KycLevel,
   })
-  kyc_level: string;
+  kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'KYC status',
-    example: 'verified',
+    example: KycStatus.VERIFIED,
+    enum: KycStatus,
   })
-  kyc_status: string;
+  kyc_status: KycStatus;
 
   @ApiPropertyOptional({
     description: 'Verification check timestamp',
@@ -471,9 +488,10 @@ export class TransactionResponseDto {
 
   @ApiProperty({
     description: 'Transaction status',
-    example: 'pending',
+    example: TransactionStatus.PENDING,
+    enum: TransactionStatus,
   })
-  status: string;
+  status: TransactionStatus;
 
   @ApiProperty({
     description: 'Transaction ID',
@@ -561,15 +579,17 @@ export class TransactionResponseDto {
 export class TimelineStepDto {
   @ApiProperty({
     description: 'Timeline step name',
-    example: 'payment_received',
+    example: TimelineStep.PAYMENT_RECEIVED,
+    enum: TimelineStep,
   })
-  step: string;
+  step: TimelineStep;
 
   @ApiProperty({
     description: 'Step status',
-    example: 'completed',
+    example: TimelineStepStatus.COMPLETED,
+    enum: TimelineStepStatus,
   })
-  status: string;
+  status: TimelineStepStatus;
 
   @ApiProperty({
     description: 'Step timestamp',
@@ -593,9 +613,10 @@ export class TransactionDetailsDto {
 
   @ApiPropertyOptional({
     description: 'Fiat currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  fiat_currency?: string;
+  fiat_currency?: FiatCurrency;
 
   @ApiPropertyOptional({
     description: 'Crypto amount',
@@ -605,15 +626,17 @@ export class TransactionDetailsDto {
 
   @ApiPropertyOptional({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  crypto_currency?: string;
+  crypto_currency?: CryptoCurrency;
 
   @ApiPropertyOptional({
     description: 'Crypto network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  crypto_network?: string;
+  crypto_network?: CryptoNetwork;
 
   @ApiProperty({
     description: 'Exchange rate',
@@ -637,15 +660,17 @@ export class UserInfoDto {
 
   @ApiProperty({
     description: 'KYC level',
-    example: '1',
+    example: KycLevel.LEVEL_1,
+    enum: KycLevel,
   })
-  kyc_level: string;
+  kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'KYC status',
-    example: 'verified',
+    example: KycStatus.VERIFIED,
+    enum: KycStatus,
   })
-  kyc_status: string;
+  kyc_status: KycStatus;
 }
 
 export class TransactionStatusDto {
@@ -663,15 +688,17 @@ export class TransactionStatusDto {
 
   @ApiProperty({
     description: 'Transaction status',
-    example: 'completed',
+    example: TransactionStatus.COMPLETED,
+    enum: TransactionStatus,
   })
-  status: string;
+  status: TransactionStatus;
 
   @ApiProperty({
     description: 'Activity type',
-    example: 'onramp',
+    example: ActivityType.ONRAMP,
+    enum: ActivityType,
   })
-  activity_type: string;
+  activity_type: ActivityType;
 
   @ApiProperty({
     description: 'User information',

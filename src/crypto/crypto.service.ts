@@ -14,6 +14,12 @@ import {
   CryptoDetailsDto,
   UserVerificationDto,
 } from '../common/dto/transactions.dto';
+import {
+  CryptoTransferStatus,
+  TransactionStatus,
+  KycLevel,
+  KycStatus,
+} from '../common/enums';
 
 @Injectable()
 export class CryptoService {
@@ -37,7 +43,7 @@ export class CryptoService {
     );
 
     const response: CryptoTransferResponseDto = {
-      status: 'pending',
+      status: CryptoTransferStatus.PENDING,
       gbawo_transaction_id: gbawoTransactionId,
       tx_hash: mockTxHash,
       network_fee: networkFee,
@@ -48,7 +54,7 @@ export class CryptoService {
 
     // Simulate async operation
     await Promise.resolve();
-    
+
     return response;
   }
 
@@ -78,7 +84,7 @@ export class CryptoService {
     ).toISOString();
 
     const response: CryptoReceiveResponseDto = {
-      status: 'waiting',
+      status: CryptoTransferStatus.WAITING,
       gbawo_transaction_id: gbawoTransactionId,
       deposit_address: depositAddress,
       qr_code: qrCode,
@@ -87,7 +93,7 @@ export class CryptoService {
 
     // Simulate async operation
     await Promise.resolve();
-    
+
     return response;
   }
 
@@ -188,8 +194,8 @@ export class CryptoService {
     const referenceCode = `REF_${Date.now()}`;
 
     const userVerification: UserVerificationDto = {
-      kyc_level: '1',
-      kyc_status: 'verified',
+      kyc_level: KycLevel.LEVEL_1,
+      kyc_status: KycStatus.VERIFIED,
       verification_check_time: new Date().toISOString(),
       basic_verification: true,
       enhanced_verification: false,
@@ -213,7 +219,7 @@ export class CryptoService {
 
     const response: TransactionResponseDto = {
       integrator_id: onrampDto.integrator_id,
-      status: 'pending_payment',
+      status: TransactionStatus.PENDING_PAYMENT,
       transaction_id: transactionId,
       user_id: onrampDto.user_id,
       reference_code: referenceCode,
@@ -237,8 +243,8 @@ export class CryptoService {
     const referenceCode = `REF_${Date.now()}`;
 
     const userVerification: UserVerificationDto = {
-      kyc_level: '1',
-      kyc_status: 'verified',
+      kyc_level: KycLevel.LEVEL_1,
+      kyc_status: KycStatus.VERIFIED,
       verification_check_time: new Date().toISOString(),
       basic_verification: true,
       enhanced_verification: false,
@@ -254,7 +260,7 @@ export class CryptoService {
 
     const response: TransactionResponseDto = {
       integrator_id: offrampDto.integrator_id,
-      status: 'pending_crypto_deposit',
+      status: TransactionStatus.PENDING_CRYPTO_DEPOSIT,
       transaction_id: transactionId,
       user_id: offrampDto.user_id,
       reference_code: referenceCode,
@@ -275,14 +281,16 @@ export class CryptoService {
     return response;
   }
 
-  async createCryptoExchange(cryptoExchangeDto: CryptoExchangeDto): Promise<TransactionResponseDto> {
+  async createCryptoExchange(
+    cryptoExchangeDto: CryptoExchangeDto,
+  ): Promise<TransactionResponseDto> {
     // TODO: Implement crypto exchange transaction creation
     const transactionId = cryptoExchangeDto.transaction_id;
     const referenceCode = `REF_${Date.now()}`;
 
     const userVerification: UserVerificationDto = {
-      kyc_level: '1',
-      kyc_status: 'verified',
+      kyc_level: KycLevel.LEVEL_1,
+      kyc_status: KycStatus.VERIFIED,
       verification_check_time: new Date().toISOString(),
       basic_verification: true,
       enhanced_verification: false,
@@ -305,7 +313,7 @@ export class CryptoService {
 
     const response: TransactionResponseDto = {
       integrator_id: cryptoExchangeDto.integrator_id,
-      status: 'pending_source_deposit',
+      status: TransactionStatus.PENDING_SOURCE_DEPOSIT,
       transaction_id: transactionId,
       user_id: cryptoExchangeDto.user_id,
       reference_code: referenceCode,

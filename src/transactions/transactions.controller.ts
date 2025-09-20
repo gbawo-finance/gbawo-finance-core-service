@@ -1,14 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
-import { TransactionStatusDto, TransactionReceiptDto } from '../common/dto/transactions.dto';
+import {
+  TransactionStatusDto,
+  TransactionReceiptDto,
+} from '../common/dto/transactions.dto';
 import { ApiResponseDto } from '../common/dto/api-response.dto';
 
 @ApiTags('Transactions')
 @Controller()
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
-
 
   @Get('transactions')
   @ApiOperation({ summary: 'Get all transactions' })

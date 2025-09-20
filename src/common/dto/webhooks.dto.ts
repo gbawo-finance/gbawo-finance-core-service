@@ -1,14 +1,33 @@
-import { IsString, IsNotEmpty, IsOptional, IsObject, IsArray, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsObject,
+  IsArray,
+  IsNumber,
+  IsEnum,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  WebhookEventType,
+  TransactionStatus,
+  FiatCurrency,
+  CryptoCurrency,
+  CryptoNetwork,
+  KycLevel,
+  VerificationStatus,
+  DocumentType,
+  DocumentStatus,
+} from '../enums';
 
 export class WebhookPayloadDto {
   @ApiProperty({
     description: 'Event type',
-    example: 'fiat.collection.completed',
+    example: WebhookEventType.FIAT_COLLECTION_COMPLETED,
+    enum: WebhookEventType,
   })
-  @IsString()
-  @IsNotEmpty()
-  event_type: string;
+  @IsEnum(WebhookEventType)
+  event_type: WebhookEventType;
 
   @ApiProperty({
     description: 'Event timestamp',
@@ -44,11 +63,11 @@ export class WebhookPayloadDto {
 
   @ApiProperty({
     description: 'Transaction status',
-    example: 'completed',
+    example: TransactionStatus.COMPLETED,
+    enum: TransactionStatus,
   })
-  @IsString()
-  @IsNotEmpty()
-  status: string;
+  @IsEnum(TransactionStatus)
+  status: TransactionStatus;
 
   @ApiProperty({
     description: 'Event data',
@@ -72,9 +91,10 @@ export class OnrampCompletedDataDto {
 
   @ApiProperty({
     description: 'Fiat currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  fiat_currency: string;
+  fiat_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Crypto amount sent',
@@ -84,15 +104,17 @@ export class OnrampCompletedDataDto {
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  crypto_currency: string;
+  crypto_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Crypto network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  crypto_network: string;
+  crypto_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Crypto transaction hash',
@@ -134,15 +156,17 @@ export class OfframpCompletedDataDto {
 
   @ApiProperty({
     description: 'Crypto currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  crypto_currency: string;
+  crypto_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Crypto network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  crypto_network: string;
+  crypto_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Crypto transaction hash',
@@ -158,9 +182,10 @@ export class OfframpCompletedDataDto {
 
   @ApiProperty({
     description: 'Fiat currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  fiat_currency: string;
+  fiat_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Recipient account',
@@ -202,9 +227,10 @@ export class FiatExchangeCompletedDataDto {
 
   @ApiProperty({
     description: 'Source currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  source_currency: string;
+  source_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Target amount sent',
@@ -214,9 +240,10 @@ export class FiatExchangeCompletedDataDto {
 
   @ApiProperty({
     description: 'Target currency',
-    example: 'EUR',
+    example: FiatCurrency.EUR,
+    enum: FiatCurrency,
   })
-  target_currency: string;
+  target_currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Recipient account',
@@ -258,15 +285,17 @@ export class CryptoExchangeCompletedDataDto {
 
   @ApiProperty({
     description: 'Source currency',
-    example: 'BTC',
+    example: CryptoCurrency.BTC,
+    enum: CryptoCurrency,
   })
-  source_currency: string;
+  source_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Source network',
-    example: 'bitcoin',
+    example: CryptoNetwork.BITCOIN,
+    enum: CryptoNetwork,
   })
-  source_network: string;
+  source_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Source transaction hash',
@@ -282,15 +311,17 @@ export class CryptoExchangeCompletedDataDto {
 
   @ApiProperty({
     description: 'Target currency',
-    example: 'ETH',
+    example: CryptoCurrency.ETH,
+    enum: CryptoCurrency,
   })
-  target_currency: string;
+  target_currency: CryptoCurrency;
 
   @ApiProperty({
     description: 'Target network',
-    example: 'ethereum',
+    example: CryptoNetwork.ETHEREUM,
+    enum: CryptoNetwork,
   })
-  target_network: string;
+  target_network: CryptoNetwork;
 
   @ApiProperty({
     description: 'Target transaction hash',
@@ -346,21 +377,19 @@ export class KycVerificationCompletedDataDto {
 
   @ApiProperty({
     description: 'KYC level that was verified',
-    example: 'level_2',
-    enum: ['level_1', 'level_2', 'level_3'],
+    example: KycLevel.LEVEL_2,
+    enum: KycLevel,
   })
-  @IsString()
-  @IsNotEmpty()
-  kyc_level: string;
+  @IsEnum(KycLevel)
+  kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'KYC verification status',
-    example: 'verified',
-    enum: ['verified', 'rejected', 'pending_review'],
+    example: VerificationStatus.VERIFIED,
+    enum: VerificationStatus,
   })
-  @IsString()
-  @IsNotEmpty()
-  verification_status: string;
+  @IsEnum(VerificationStatus)
+  verification_status: VerificationStatus;
 
   @ApiProperty({
     description: 'KYC verification timestamp',
@@ -405,17 +434,17 @@ export class KycVerificationCompletedDataDto {
     description: 'Documents that were verified',
     example: [
       {
-        document_type: 'passport',
+        document_type: DocumentType.PASSPORT,
         document_id: 'doc_123',
-        status: 'verified',
+        status: DocumentStatus.VERIFIED,
       },
     ],
   })
   @IsArray()
   verified_documents: Array<{
-    document_type: string;
+    document_type: DocumentType;
     document_id: string;
-    status: string;
+    status: DocumentStatus;
   }>;
 
   @ApiProperty({
@@ -434,11 +463,11 @@ export class KycVerificationCompletedDataDto {
 export class KycWebhookPayloadDto {
   @ApiProperty({
     description: 'Event type',
-    example: 'kyc.verification_completed',
+    example: WebhookEventType.KYC_VERIFICATION_COMPLETED,
+    enum: [WebhookEventType.KYC_VERIFICATION_COMPLETED],
   })
-  @IsString()
-  @IsNotEmpty()
-  event_type: 'kyc.verification_completed';
+  @IsEnum([WebhookEventType.KYC_VERIFICATION_COMPLETED])
+  event_type: WebhookEventType.KYC_VERIFICATION_COMPLETED;
 
   @ApiProperty({
     description: 'Event timestamp',

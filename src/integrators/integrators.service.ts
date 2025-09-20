@@ -50,7 +50,7 @@ export class IntegratorsService {
         supported_currencies: ['USD', 'GBP', 'CAD', 'BTC', 'ETH'],
         created_at: '2023-01-15T10:30:00Z',
         last_activity: '2023-12-01T14:20:00Z',
-        monthly_volume: 125000.50,
+        monthly_volume: 125000.5,
         monthly_transactions: 1247,
       },
       {
@@ -106,21 +106,30 @@ export class IntegratorsService {
     // Apply filters
     let filteredIntegrators = mockIntegrators;
     if (status) {
-      filteredIntegrators = filteredIntegrators.filter(i => i.status === status);
+      filteredIntegrators = filteredIntegrators.filter(
+        (i) => i.status === status,
+      );
     }
     if (integrationType) {
-      filteredIntegrators = filteredIntegrators.filter(i => i.integration_type === integrationType);
+      filteredIntegrators = filteredIntegrators.filter(
+        (i) => i.integration_type === integrationType,
+      );
     }
 
     // Apply pagination
     const totalCount = filteredIntegrators.length;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    const paginatedIntegrators = filteredIntegrators.slice(startIndex, endIndex);
+    const paginatedIntegrators = filteredIntegrators.slice(
+      startIndex,
+      endIndex,
+    );
 
     // Calculate pagination info
     const totalPages = Math.ceil(totalCount / limit);
-    const activeCount = mockIntegrators.filter(i => i.status === 'active').length;
+    const activeCount = mockIntegrators.filter(
+      (i) => i.status === 'active',
+    ).length;
 
     const response: IntegratorsListResponseDto = {
       integrators: paginatedIntegrators,
@@ -141,7 +150,9 @@ export class IntegratorsService {
     return response;
   }
 
-  async getIntegratorProfile(integratorId: string): Promise<IntegratorProfileDto> {
+  async getIntegratorProfile(
+    integratorId: string,
+  ): Promise<IntegratorProfileDto> {
     // TODO: Implement integrator profile retrieval
     // This would typically involve:
     // 1. Validate integrator ID
@@ -286,7 +297,9 @@ export class IntegratorsService {
     return rotationResponse;
   }
 
-  async getWebhookConfiguration(integratorId: string): Promise<WebhookResponseDto> {
+  async getWebhookConfiguration(
+    _integratorId: string,
+  ): Promise<WebhookResponseDto> {
     // TODO: Implement webhook configuration retrieval
     // This would typically involve:
     // 1. Validate integrator ID
@@ -360,7 +373,7 @@ export class IntegratorsService {
 
     // Simulate webhook test
     const testEventType = testConfig.event_type || 'test.webhook';
-    const testPayload = testConfig.test_payload || {
+    const _testPayload = testConfig.test_payload || {
       event_type: testEventType,
       test: true,
       integrator_id: integratorId,
@@ -391,7 +404,9 @@ export class IntegratorsService {
     return testResult;
   }
 
-  async getIntegratorLimits(integratorId: string): Promise<IntegratorLimitsResponseDto> {
+  async getIntegratorLimits(
+    _integratorId: string,
+  ): Promise<IntegratorLimitsResponseDto> {
     // TODO: Implement integrator limits retrieval
     // This would typically involve:
     // 1. Validate integrator ID
@@ -439,7 +454,7 @@ export class IntegratorsService {
     ];
 
     const response: IntegratorLimitsResponseDto = {
-      integrator_id: integratorId,
+      integrator_id: _integratorId,
       limits: limits,
       updated_at: '2023-11-15T14:30:00Z',
     };
@@ -462,15 +477,17 @@ export class IntegratorsService {
     // 4. Return updated limits configuration
 
     // Mock updated limits - merge with existing data
-    const updatedLimits: TransactionLimitDto[] = updateData.limits.map((updateLimit) => ({
-      transaction_type: updateLimit.transaction_type,
-      min_amount: updateLimit.min_amount ?? 10.0,
-      max_amount: updateLimit.max_amount ?? 10000.0,
-      currency: updateLimit.currency ?? 'USD',
-      daily_limit: updateLimit.daily_limit ?? 50000.0,
-      monthly_limit: updateLimit.monthly_limit ?? 500000.0,
-      enabled: updateLimit.enabled ?? true,
-    }));
+    const updatedLimits: TransactionLimitDto[] = updateData.limits.map(
+      (updateLimit) => ({
+        transaction_type: updateLimit.transaction_type,
+        min_amount: updateLimit.min_amount ?? 10.0,
+        max_amount: updateLimit.max_amount ?? 10000.0,
+        currency: updateLimit.currency ?? 'USD',
+        daily_limit: updateLimit.daily_limit ?? 50000.0,
+        monthly_limit: updateLimit.monthly_limit ?? 500000.0,
+        enabled: updateLimit.enabled ?? true,
+      }),
+    );
 
     const response: IntegratorLimitsResponseDto = {
       integrator_id: integratorId,
@@ -499,7 +516,7 @@ export class IntegratorsService {
     const analytics: IntegratorAnalyticsDto = {
       integrator_id: integratorId,
       period: period,
-      total_volume: 1250000.50,
+      total_volume: 1250000.5,
       total_fees: 12500.75,
       transaction_count: 2847,
       success_rate: 98.5,
@@ -507,7 +524,7 @@ export class IntegratorsService {
       top_transaction_types: [
         { type: 'onramp', volume: 750000.25, count: 1205 },
         { type: 'offramp', volume: 350000.15, count: 892 },
-        { type: 'fiat_exchange', volume: 150000.10, count: 750 },
+        { type: 'fiat_exchange', volume: 150000.1, count: 750 },
       ],
       daily_breakdown: this.generateDailyBreakdown(30),
       generated_at: new Date().toISOString(),
@@ -530,7 +547,9 @@ export class IntegratorsService {
     // 2. Calculate totals and generate settlement entries
     // 3. Return comprehensive settlement report
 
-    const start = periodStart || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const start =
+      periodStart ||
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const end = periodEnd || new Date().toISOString();
 
     // Mock settlement entries
@@ -623,7 +642,7 @@ export class IntegratorsService {
       unmatched_transactions: 2,
       total_expected_amount: 547250.75,
       total_actual_amount: 547248.25,
-      total_difference: -2.50,
+      total_difference: -2.5,
       items: items,
       generated_at: new Date().toISOString(),
     };
@@ -634,7 +653,9 @@ export class IntegratorsService {
     return report;
   }
 
-  async getIntegratorRatesConfig(integratorId: string): Promise<IntegratorRatesConfigDto> {
+  async getIntegratorRatesConfig(
+    integratorId: string,
+  ): Promise<IntegratorRatesConfigDto> {
     // TODO: Implement rates configuration retrieval
     // This would typically involve:
     // 1. Fetch rate configurations from database
@@ -707,20 +728,22 @@ export class IntegratorsService {
     // 3. Return updated configuration
 
     // Mock updated rate configurations
-    const updatedConfigs: RateConfigDto[] = updateData.rate_configs.map((updateConfig) => ({
-      transaction_type: updateConfig.transaction_type,
-      fee_structure: updateConfig.fee_structure || {
-        type: 'percentage',
-        value: 2.5,
-        min_amount: 1.0,
-        max_amount: 100.0,
-        currency: 'USD',
-      },
-      dynamic_pricing: updateConfig.dynamic_pricing ?? true,
-      markup_percentage: updateConfig.markup_percentage ?? 0.5,
-      capped_fees: updateConfig.capped_fees ?? true,
-      enabled: updateConfig.enabled ?? true,
-    }));
+    const updatedConfigs: RateConfigDto[] = updateData.rate_configs.map(
+      (updateConfig) => ({
+        transaction_type: updateConfig.transaction_type,
+        fee_structure: updateConfig.fee_structure || {
+          type: 'percentage',
+          value: 2.5,
+          min_amount: 1.0,
+          max_amount: 100.0,
+          currency: 'USD',
+        },
+        dynamic_pricing: updateConfig.dynamic_pricing ?? true,
+        markup_percentage: updateConfig.markup_percentage ?? 0.5,
+        capped_fees: updateConfig.capped_fees ?? true,
+        enabled: updateConfig.enabled ?? true,
+      }),
+    );
 
     const config: IntegratorRatesConfigDto = {
       integrator_id: integratorId,

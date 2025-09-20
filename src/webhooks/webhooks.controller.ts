@@ -1,7 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from '../common/dto/api-response.dto';
-import { WebhookPayloadDto, KycWebhookPayloadDto } from '../common/dto/webhooks.dto';
+import {
+  WebhookPayloadDto,
+  KycWebhookPayloadDto,
+} from '../common/dto/webhooks.dto';
 import { WebhooksService } from './webhooks.service';
 
 @ApiTags('Internal Webhooks')

@@ -78,9 +78,8 @@ export class IntegratorsController {
   async getIntegratorProfile(
     @Param('integratorId') integratorId: string,
   ): Promise<ApiResponseDto<IntegratorProfileDto>> {
-    const profile = await this.integratorsService.getIntegratorProfile(
-      integratorId,
-    );
+    const profile =
+      await this.integratorsService.getIntegratorProfile(integratorId);
     return ApiResponseDto.success(
       profile,
       'Integrator profile retrieved successfully',
@@ -315,9 +314,8 @@ export class IntegratorsController {
   async getIntegratorLimits(
     @Param('integratorId') integratorId: string,
   ): Promise<ApiResponseDto<IntegratorLimitsResponseDto>> {
-    const limits = await this.integratorsService.getIntegratorLimits(
-      integratorId,
-    );
+    const limits =
+      await this.integratorsService.getIntegratorLimits(integratorId);
     return ApiResponseDto.success(
       limits,
       'Transaction limits retrieved successfully',
@@ -363,7 +361,9 @@ export class IntegratorsController {
   }
 
   @Get(':integratorId/analytics')
-  @ApiOperation({ summary: 'Get integrator analytics - Volume, fees, success rates' })
+  @ApiOperation({
+    summary: 'Get integrator analytics - Volume, fees, success rates',
+  })
   @ApiParam({
     name: 'integratorId',
     description: 'Integrator ID',
@@ -491,9 +491,8 @@ export class IntegratorsController {
   async getIntegratorRatesConfig(
     @Param('integratorId') integratorId: string,
   ): Promise<ApiResponseDto<IntegratorRatesConfigDto>> {
-    const config = await this.integratorsService.getIntegratorRatesConfig(
-      integratorId,
-    );
+    const config =
+      await this.integratorsService.getIntegratorRatesConfig(integratorId);
     return ApiResponseDto.success(
       config,
       'Rates configuration retrieved successfully',
@@ -528,10 +527,11 @@ export class IntegratorsController {
     @Param('integratorId') integratorId: string,
     @Body() updateData: UpdateIntegratorRatesConfigDto,
   ): Promise<ApiResponseDto<IntegratorRatesConfigDto>> {
-    const updatedConfig = await this.integratorsService.updateIntegratorRatesConfig(
-      integratorId,
-      updateData,
-    );
+    const updatedConfig =
+      await this.integratorsService.updateIntegratorRatesConfig(
+        integratorId,
+        updateData,
+      );
     return ApiResponseDto.success(
       updatedConfig,
       'Rates configuration updated successfully',

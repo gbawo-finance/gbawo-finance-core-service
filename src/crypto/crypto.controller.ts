@@ -135,7 +135,8 @@ export class CryptoController {
   async createCryptoExchange(
     @Body() cryptoExchangeDto: CryptoExchangeDto,
   ): Promise<ApiResponseDto<TransactionResponseDto>> {
-    const transaction = await this.cryptoService.createCryptoExchange(cryptoExchangeDto);
+    const transaction =
+      await this.cryptoService.createCryptoExchange(cryptoExchangeDto);
     return ApiResponseDto.success(
       transaction,
       'Crypto exchange transaction created successfully',

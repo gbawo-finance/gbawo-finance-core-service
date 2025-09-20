@@ -7,6 +7,16 @@ import {
   IsOptional,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  UserAccountStatus,
+  KycLevel,
+  KycStatus,
+  DocumentType,
+  DocumentStatus,
+  LegacyKycLevel,
+  SupportedCountry,
+  FiatCurrency,
+} from '../enums';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -73,15 +83,17 @@ export class CreateUserResponseDto {
 
   @ApiProperty({
     description: 'Account status',
-    example: 'active',
+    example: UserAccountStatus.ACTIVE,
+    enum: UserAccountStatus,
   })
-  account_status: string;
+  account_status: UserAccountStatus;
 
   @ApiProperty({
     description: 'KYC level',
-    example: '0',
+    example: KycLevel.LEVEL_0,
+    enum: KycLevel,
   })
-  kyc_level: string;
+  kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'Available services',
@@ -107,11 +119,11 @@ export class SubmitKycDto {
 
   @ApiProperty({
     description: 'KYC level to submit',
-    example: '1',
-    enum: ['1', '2'],
+    example: LegacyKycLevel.LEVEL_1,
+    enum: LegacyKycLevel,
   })
-  @IsEnum(['1', '2'])
-  level: string;
+  @IsEnum(LegacyKycLevel)
+  level: LegacyKycLevel;
 }
 
 export class UserProfileDto {
@@ -153,30 +165,31 @@ export class UserProfileDto {
 
   @ApiProperty({
     description: 'User country',
-    example: 'US',
+    example: SupportedCountry.US,
+    enum: SupportedCountry,
   })
-  country: string;
+  country: SupportedCountry;
 
   @ApiProperty({
     description: 'User account status',
-    example: 'active',
-    enum: ['active', 'suspended', 'pending', 'inactive'],
+    example: UserAccountStatus.ACTIVE,
+    enum: UserAccountStatus,
   })
-  status: string;
+  status: UserAccountStatus;
 
   @ApiProperty({
     description: 'Current KYC level',
-    example: 'level_2',
-    enum: ['level_0', 'level_1', 'level_2', 'level_3'],
+    example: KycLevel.LEVEL_2,
+    enum: KycLevel,
   })
-  kyc_level: string;
+  kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'KYC verification status',
-    example: 'verified',
-    enum: ['pending', 'verified', 'rejected', 'expired'],
+    example: KycStatus.VERIFIED,
+    enum: KycStatus,
   })
-  kyc_status: string;
+  kyc_status: KycStatus;
 
   @ApiProperty({
     description: 'Account creation timestamp',
@@ -260,17 +273,17 @@ export class KycDocumentDto {
 
   @ApiProperty({
     description: 'Document type',
-    example: 'passport',
-    enum: ['passport', 'drivers_license', 'national_id', 'utility_bill', 'bank_statement'],
+    example: DocumentType.PASSPORT,
+    enum: DocumentType,
   })
-  document_type: string;
+  document_type: DocumentType;
 
   @ApiProperty({
     description: 'Document status',
-    example: 'verified',
-    enum: ['pending', 'verified', 'rejected', 'expired'],
+    example: DocumentStatus.VERIFIED,
+    enum: DocumentStatus,
   })
-  status: string;
+  status: DocumentStatus;
 
   @ApiProperty({
     description: 'Document upload timestamp',
@@ -300,17 +313,17 @@ export class KycHistoryEntryDto {
 
   @ApiProperty({
     description: 'KYC level attempted',
-    example: 'level_2',
-    enum: ['level_0', 'level_1', 'level_2', 'level_3'],
+    example: KycLevel.LEVEL_2,
+    enum: KycLevel,
   })
-  kyc_level: string;
+  kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'KYC status',
-    example: 'verified',
-    enum: ['pending', 'verified', 'rejected', 'expired'],
+    example: KycStatus.VERIFIED,
+    enum: KycStatus,
   })
-  status: string;
+  status: KycStatus;
 
   @ApiProperty({
     description: 'Submission timestamp',
@@ -346,17 +359,17 @@ export class UserKycStatusDto {
 
   @ApiProperty({
     description: 'Current KYC level',
-    example: 'level_2',
-    enum: ['level_0', 'level_1', 'level_2', 'level_3'],
+    example: KycLevel.LEVEL_2,
+    enum: KycLevel,
   })
-  current_kyc_level: string;
+  current_kyc_level: KycLevel;
 
   @ApiProperty({
     description: 'Overall KYC status',
-    example: 'verified',
-    enum: ['pending', 'verified', 'rejected', 'expired'],
+    example: KycStatus.VERIFIED,
+    enum: KycStatus,
   })
-  overall_status: string;
+  overall_status: KycStatus;
 
   @ApiProperty({
     description: 'Next available KYC level',
@@ -382,14 +395,14 @@ export class UserKycStatusDto {
       daily_limit: 10000,
       monthly_limit: 50000,
       single_transaction_limit: 5000,
-      currency: 'USD',
+      currency: FiatCurrency.USD,
     },
   })
   transaction_limits: {
     daily_limit: number;
     monthly_limit: number;
     single_transaction_limit: number;
-    currency: string;
+    currency: FiatCurrency;
   };
 
   @ApiProperty({

@@ -11,7 +11,21 @@ import {
   FiatDisburseResponseDto,
   CollectionInstructionsDto,
 } from '../common/dto/fiat.dto';
-import { FiatExchangeDto, TransactionResponseDto, PaymentDetailsDto, UserVerificationDto } from '../common/dto/transactions.dto';
+import {
+  FiatExchangeDto,
+  TransactionResponseDto,
+  PaymentDetailsDto,
+  UserVerificationDto,
+} from '../common/dto/transactions.dto';
+import {
+  SupportedCountry,
+  FiatCurrency,
+  BankStatus,
+  AccountResolutionStatus,
+  TransactionStatus,
+  KycLevel,
+  KycStatus,
+} from '../common/enums';
 
 @Injectable()
 export class FiatService {
@@ -26,23 +40,23 @@ export class FiatService {
       {
         bank_code: 'FNB001',
         bank_name: 'First National Bank',
-        country: query?.country || 'US',
-        supported_currencies: ['USD', 'EUR'],
-        status: 'active',
+        country: (query?.country as SupportedCountry) || SupportedCountry.US,
+        supported_currencies: [FiatCurrency.USD, FiatCurrency.EUR],
+        status: BankStatus.ACTIVE,
       },
       {
         bank_code: 'WELLS001',
         bank_name: 'Wells Fargo Bank',
-        country: query?.country || 'US',
-        supported_currencies: ['USD'],
-        status: 'active',
+        country: (query?.country as SupportedCountry) || SupportedCountry.US,
+        supported_currencies: [FiatCurrency.USD],
+        status: BankStatus.ACTIVE,
       },
       {
         bank_code: 'CHASE001',
         bank_name: 'JPMorgan Chase Bank',
-        country: query?.country || 'US',
-        supported_currencies: ['USD', 'EUR'],
-        status: 'active',
+        country: (query?.country as SupportedCountry) || SupportedCountry.US,
+        supported_currencies: [FiatCurrency.USD, FiatCurrency.EUR],
+        status: BankStatus.ACTIVE,
       },
     ];
 
@@ -53,7 +67,7 @@ export class FiatService {
 
     // Simulate async operation
     await Promise.resolve();
-    
+
     return {
       banks: filteredBanks,
     };
@@ -69,14 +83,16 @@ export class FiatService {
     // 3. Return account information or error
 
     // Mock account resolution logic
-    const isValidAccount = this.validateMockAccount(
-      resolveAccountDto.bank_code,
-      resolveAccountDto.account_number,
+    const isValidAccount = await Promise.resolve(
+      this.validateMockAccount(
+        resolveAccountDto.bank_code,
+        resolveAccountDto.account_number,
+      ),
     );
 
     if (!isValidAccount) {
       return {
-        status: 'failed',
+        status: AccountResolutionStatus.FAILED,
         account_number: resolveAccountDto.account_number,
         account_name: '',
         bank_code: resolveAccountDto.bank_code,
@@ -88,7 +104,7 @@ export class FiatService {
     }
 
     return {
-      status: 'success',
+      status: AccountResolutionStatus.SUCCESS,
       account_number: resolveAccountDto.account_number,
       account_name: 'John Doe', // Mock resolved name
       bank_code: resolveAccountDto.bank_code,
@@ -107,6 +123,7 @@ export class FiatService {
     // 3. Set up monitoring for incoming payments
     // 4. Return collection instructions
 
+    await Promise.resolve(); // Simulate async operation
     const gbawoTransactionId = `gbawo_col_${Date.now()}`;
     const collectionReference = `COL_${Date.now()}`;
     const referenceCode = `REF_${Date.now()}`;
@@ -118,7 +135,7 @@ export class FiatService {
     };
 
     const response: FiatCollectResponseDto = {
-      status: 'waiting_for_payment',
+      status: TransactionStatus.WAITING_FOR_PAYMENT,
       gbawo_transaction_id: gbawoTransactionId,
       collection_reference: collectionReference,
       collection_instructions: collectionInstructions,
@@ -137,20 +154,18 @@ export class FiatService {
     // 2. Initiate bank transfer to recipient
     // 3. Return disbursement status and reference
 
+    await Promise.resolve(); // Simulate async operation
     const gbawoTransactionId = `gbawo_dis_${Date.now()}`;
     const disbursementReference = `DIS_${Date.now()}`;
 
     const response: FiatDisburseResponseDto = {
-      status: 'processing',
+      status: TransactionStatus.PROCESSING,
       gbawo_transaction_id: gbawoTransactionId,
       disbursement_reference: disbursementReference,
       estimated_completion: new Date(
         Date.now() + 3 * 60 * 60 * 1000,
       ).toISOString(), // 3 hours
-      fees: this.calculateDisbursementFees(
-        fiatDisburseDto.amount,
-        fiatDisburseDto.currency,
-      ),
+      fees: this.calculateDisbursementFees(fiatDisburseDto.amount),
     };
 
     return response;
@@ -175,7 +190,7 @@ export class FiatService {
     return bankNames[bankCode] || 'Unknown Bank';
   }
 
-  private calculateDisbursementFees(amount: number, currency: string): number {
+  private calculateDisbursementFees(amount: number): number {
     // Mock fee calculation
     const baseFee = 2.5;
     const percentageFee = amount * 0.01; // 1%
@@ -192,8 +207,8 @@ export class FiatService {
     const referenceCode = `REF_${Date.now()}`;
 
     const userVerification: UserVerificationDto = {
-      kyc_level: '1',
-      kyc_status: 'verified',
+      kyc_level: KycLevel.LEVEL_1,
+      kyc_status: KycStatus.VERIFIED,
       verification_check_time: new Date().toISOString(),
       basic_verification: true,
       enhanced_verification: false,
@@ -210,7 +225,7 @@ export class FiatService {
 
     const response: TransactionResponseDto = {
       integrator_id: fiatExchangeDto.integrator_id,
-      status: 'pending_source_payment',
+      status: TransactionStatus.PENDING_SOURCE_PAYMENT,
       transaction_id: transactionId,
       user_id: fiatExchangeDto.user_id,
       reference_code: referenceCode,

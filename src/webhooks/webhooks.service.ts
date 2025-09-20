@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { 
+import {
   WebhookPayloadDto,
   KycWebhookPayloadDto,
-  KycVerificationCompletedDataDto,
 } from '../common/dto/webhooks.dto';
 
 @Injectable()
@@ -137,6 +136,7 @@ export class WebhooksService {
     // 4. Add KYC history entry
     // 5. Update document statuses
 
+    await Promise.resolve(); // Simulate async operation
     console.log(
       `Updating KYC status for user ${webhookPayload.user_id}: ${webhookPayload.data.verification_status} at level ${webhookPayload.data.kyc_level}`,
     );
@@ -159,7 +159,10 @@ export class WebhooksService {
     console.log('KYC update:', kycUpdate);
 
     // Mock transaction limit updates based on KYC level
-    const newLimits = this.calculateTransactionLimits(webhookPayload.data.kyc_level, webhookPayload.data.verification_status);
+    const newLimits = this.calculateTransactionLimits(
+      webhookPayload.data.kyc_level,
+      webhookPayload.data.verification_status,
+    );
     console.log('Updated transaction limits:', newLimits);
   }
 
@@ -175,9 +178,8 @@ export class WebhooksService {
     // 5. Send email/SMS notification to user
     // 6. Handle retry logic for failed deliveries
 
-    console.log(
-      `Sending KYC notification for user: ${webhookPayload.user_id}`,
-    );
+    await Promise.resolve(); // Simulate async operation
+    console.log(`Sending KYC notification for user: ${webhookPayload.user_id}`);
 
     const integratorKycWebhook = {
       event_type: webhookPayload.event_type,
@@ -200,7 +202,10 @@ export class WebhooksService {
     // For now, we just log that the notifications would be sent
   }
 
-  private calculateTransactionLimits(kycLevel: string, status: string): Record<string, any> {
+  private calculateTransactionLimits(
+    kycLevel: string,
+    status: string,
+  ): Record<string, any> {
     // Mock transaction limit calculation based on KYC level
     if (status !== 'verified') {
       return {
@@ -253,6 +258,7 @@ export class WebhooksService {
     // 3. Update transaction data with webhook payload
     // 4. Calculate any final amounts or fees
 
+    await Promise.resolve(); // Simulate async operation
     console.log(
       `Updating transaction ${webhookPayload.gbawo_transaction_id} with status: ${webhookPayload.status}`,
     );
@@ -279,6 +285,7 @@ export class WebhooksService {
     // 4. Send HTTP POST request to integrator
     // 5. Handle retry logic for failed deliveries
 
+    await Promise.resolve(); // Simulate async operation
     console.log(
       `Sending notification to integrator for transaction: ${webhookPayload.gbawo_transaction_id}`,
     );
@@ -300,9 +307,9 @@ export class WebhooksService {
   }
 
   private validateWebhookSignature(
-    payload: string,
-    signature: string,
-    secret: string,
+    _payload: string,
+    _signature: string,
+    _secret: string,
   ): boolean {
     // TODO: Implement webhook signature validation
     // This would use HMAC-SHA256 or similar to validate the webhook

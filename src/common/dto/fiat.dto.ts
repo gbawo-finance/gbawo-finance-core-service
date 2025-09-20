@@ -6,9 +6,18 @@ import {
   IsOptional,
   IsObject,
   ValidateNested,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  SupportedCountry,
+  FiatCurrency,
+  BankStatus,
+  AccountResolutionStatus,
+  PaymentMethod,
+  TransactionStatus,
+} from '../enums';
 
 export class ListBanksQueryDto {
   @ApiPropertyOptional({
@@ -35,22 +44,26 @@ export class BankDto {
 
   @ApiProperty({
     description: 'Country code',
-    example: 'US',
+    example: SupportedCountry.US,
+    enum: SupportedCountry,
   })
-  country: string;
+  country: SupportedCountry;
 
   @ApiProperty({
     description: 'Supported currencies',
-    example: ['USD', 'EUR'],
+    example: [FiatCurrency.USD, FiatCurrency.EUR],
     type: [String],
+    enum: FiatCurrency,
+    isArray: true,
   })
-  supported_currencies: string[];
+  supported_currencies: FiatCurrency[];
 
   @ApiProperty({
     description: 'Bank status',
-    example: 'active',
+    example: BankStatus.ACTIVE,
+    enum: BankStatus,
   })
-  status: string;
+  status: BankStatus;
 }
 
 export class ListBanksResponseDto {
@@ -82,9 +95,10 @@ export class ResolveAccountDto {
 export class ResolveAccountResponseDto {
   @ApiProperty({
     description: 'Resolution status',
-    example: 'success',
+    example: AccountResolutionStatus.SUCCESS,
+    enum: AccountResolutionStatus,
   })
-  status: string;
+  status: AccountResolutionStatus;
 
   @ApiProperty({
     description: 'Account number',
@@ -176,19 +190,19 @@ export class FiatCollectDto {
 
   @ApiProperty({
     description: 'Currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  currency: string;
+  @IsEnum(FiatCurrency)
+  currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Payment method',
-    example: 'bank_transfer',
+    example: PaymentMethod.BANK_TRANSFER,
+    enum: PaymentMethod,
   })
-  @IsString()
-  @IsNotEmpty()
-  payment_method: string;
+  @IsEnum(PaymentMethod)
+  payment_method: PaymentMethod;
 
   @ApiProperty({
     description: 'User ID',
@@ -238,9 +252,10 @@ export class CollectionInstructionsDto {
 export class FiatCollectResponseDto {
   @ApiProperty({
     description: 'Collection status',
-    example: 'pending',
+    example: TransactionStatus.WAITING_FOR_PAYMENT,
+    enum: TransactionStatus,
   })
-  status: string;
+  status: TransactionStatus;
 
   @ApiProperty({
     description: 'Gbawo transaction ID',
@@ -320,11 +335,11 @@ export class FiatDisburseDto {
 
   @ApiProperty({
     description: 'Currency',
-    example: 'USD',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
   })
-  @IsString()
-  @IsNotEmpty()
-  currency: string;
+  @IsEnum(FiatCurrency)
+  currency: FiatCurrency;
 
   @ApiProperty({
     description: 'Recipient details',
@@ -354,9 +369,10 @@ export class FiatDisburseDto {
 export class FiatDisburseResponseDto {
   @ApiProperty({
     description: 'Disbursement status',
-    example: 'processing',
+    example: TransactionStatus.PROCESSING,
+    enum: TransactionStatus,
   })
-  status: string;
+  status: TransactionStatus;
 
   @ApiProperty({
     description: 'Gbawo transaction ID',

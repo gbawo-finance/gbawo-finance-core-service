@@ -227,11 +227,7 @@ export class WebhookConfigDto {
 
   @ApiProperty({
     description: 'Webhook events to subscribe to',
-    example: [
-      'transaction.completed',
-      'transaction.failed',
-      'kyc.verified',
-    ],
+    example: ['transaction.completed', 'transaction.failed', 'kyc.verified'],
     type: [String],
   })
   @IsArray()
@@ -264,11 +260,7 @@ export class WebhookResponseDto {
 
   @ApiProperty({
     description: 'Subscribed events',
-    example: [
-      'transaction.completed',
-      'transaction.failed',
-      'kyc.verified',
-    ],
+    example: ['transaction.completed', 'transaction.failed', 'kyc.verified'],
     type: [String],
   })
   events: string[];
@@ -505,7 +497,7 @@ export class AnalyticsMetricDto {
 
   @ApiProperty({
     description: 'Metric value',
-    example: 1250000.50,
+    example: 1250000.5,
   })
   value: number;
 
@@ -537,7 +529,7 @@ export class IntegratorAnalyticsDto {
 
   @ApiProperty({
     description: 'Total transaction volume',
-    example: 1250000.50,
+    example: 1250000.5,
   })
   total_volume: number;
 
@@ -812,7 +804,7 @@ export class ReconciliationReportDto {
 
   @ApiProperty({
     description: 'Total difference',
-    example: -2.50,
+    example: -2.5,
   })
   total_difference: number;
 
@@ -1030,7 +1022,7 @@ export class IntegratorSummaryDto {
 
   @ApiProperty({
     description: 'Transaction volume (30 days)',
-    example: 125000.50,
+    example: 125000.5,
   })
   monthly_volume: number;
 

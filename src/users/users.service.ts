@@ -9,6 +9,15 @@ import {
   KycHistoryEntryDto,
   KycDocumentDto,
 } from '../common/dto/users.dto';
+import {
+  UserAccountStatus,
+  KycLevel,
+  KycStatus,
+  DocumentType,
+  DocumentStatus,
+  SupportedCountry,
+  FiatCurrency,
+} from '../common/enums';
 
 @Injectable()
 export class UsersService {
@@ -23,14 +32,15 @@ export class UsersService {
     // 4. Initialize user's KYC level and account status
     // 5. Return user response
 
+    await Promise.resolve(); // Simulate async operation
     const response: CreateUserResponseDto = {
       user_id: `usr_${Date.now()}`,
       email: createUserDto.email,
       phone: createUserDto.phone,
       first_name: createUserDto.first_name,
       last_name: createUserDto.last_name,
-      account_status: 'active',
-      kyc_level: '0',
+      account_status: UserAccountStatus.ACTIVE,
+      kyc_level: KycLevel.LEVEL_0,
       available_services: ['basic_transfer'],
       created_at: new Date().toISOString(),
     };
@@ -41,7 +51,7 @@ export class UsersService {
   async submitKyc(
     userId: string,
     level: string,
-    submitKycDto: SubmitKycDto,
+    _submitKycDto: SubmitKycDto,
   ): Promise<{ status: string; message: string }> {
     // TODO: Implement KYC submission logic
     // This would typically involve:
@@ -52,6 +62,7 @@ export class UsersService {
     // 5. Update user's KYC status
     // 6. Return submission status
 
+    await Promise.resolve(); // Simulate async operation
     return {
       status: 'submitted',
       message: `KYC level ${level} submission for user ${userId} has been received and is being processed`,
@@ -73,10 +84,10 @@ export class UsersService {
       first_name: 'John',
       last_name: 'Doe',
       date_of_birth: '1990-01-15',
-      country: 'US',
-      status: 'active',
-      kyc_level: 'level_2',
-      kyc_status: 'verified',
+      country: SupportedCountry.US,
+      status: UserAccountStatus.ACTIVE,
+      kyc_level: KycLevel.LEVEL_2,
+      kyc_status: KycStatus.VERIFIED,
       created_at: '2023-11-01T10:30:00Z',
       updated_at: '2023-12-01T14:20:00Z',
       verification_flags: {
@@ -111,10 +122,10 @@ export class UsersService {
       first_name: updateData.first_name || 'John',
       last_name: updateData.last_name || 'Doe',
       date_of_birth: updateData.date_of_birth || '1990-01-15',
-      country: updateData.country || 'US',
-      status: 'active',
-      kyc_level: 'level_2',
-      kyc_status: 'verified',
+      country: (updateData.country as SupportedCountry) || SupportedCountry.US,
+      status: UserAccountStatus.ACTIVE,
+      kyc_level: KycLevel.LEVEL_2,
+      kyc_status: KycStatus.VERIFIED,
       created_at: '2023-11-01T10:30:00Z',
       updated_at: new Date().toISOString(), // Updated timestamp
       verification_flags: {
@@ -142,15 +153,15 @@ export class UsersService {
     const mockDocuments: KycDocumentDto[] = [
       {
         document_id: 'doc_001',
-        document_type: 'passport',
-        status: 'verified',
+        document_type: DocumentType.PASSPORT,
+        status: DocumentStatus.VERIFIED,
         uploaded_at: '2023-11-10T09:30:00Z',
         verified_at: '2023-11-10T10:45:00Z',
       },
       {
         document_id: 'doc_002',
-        document_type: 'utility_bill',
-        status: 'verified',
+        document_type: DocumentType.UTILITY_BILL,
+        status: DocumentStatus.VERIFIED,
         uploaded_at: '2023-11-12T14:20:00Z',
         verified_at: '2023-11-12T15:30:00Z',
       },
@@ -160,8 +171,8 @@ export class UsersService {
     const kycHistory: KycHistoryEntryDto[] = [
       {
         entry_id: 'kyc_001',
-        kyc_level: 'level_1',
-        status: 'verified',
+        kyc_level: KycLevel.LEVEL_1,
+        status: KycStatus.VERIFIED,
         submitted_at: '2023-11-10T09:00:00Z',
         reviewed_at: '2023-11-10T11:00:00Z',
         reviewer_notes: 'Identity verification completed successfully',
@@ -169,8 +180,8 @@ export class UsersService {
       },
       {
         entry_id: 'kyc_002',
-        kyc_level: 'level_2',
-        status: 'verified',
+        kyc_level: KycLevel.LEVEL_2,
+        status: KycStatus.VERIFIED,
         submitted_at: '2023-11-12T14:00:00Z',
         reviewed_at: '2023-11-12T16:00:00Z',
         reviewer_notes: 'Address verification completed',
@@ -181,8 +192,8 @@ export class UsersService {
     // Mock KYC status
     const kycStatus: UserKycStatusDto = {
       user_id: userId,
-      current_kyc_level: 'level_2',
-      overall_status: 'verified',
+      current_kyc_level: KycLevel.LEVEL_2,
+      overall_status: KycStatus.VERIFIED,
       next_available_level: 'level_3',
       completion_percentage: 85.5,
       required_documents_next_level: ['bank_statement', 'proof_of_income'],
@@ -190,7 +201,7 @@ export class UsersService {
         daily_limit: 10000,
         monthly_limit: 50000,
         single_transaction_limit: 5000,
-        currency: 'USD',
+        currency: FiatCurrency.USD,
       },
       kyc_history: kycHistory,
       last_updated: '2023-11-12T16:00:00Z',

@@ -21,6 +21,7 @@ export class RatesService {
     // 5. Verify transaction limits
     // 6. Return comprehensive rate response
 
+    await Promise.resolve(); // Simulate async operation
     // Mock calculation for demonstration
     const mockExchangeRate = this.getMockExchangeRate(
       rateCalculationDto.source_currency,
