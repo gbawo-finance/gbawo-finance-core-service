@@ -7,8 +7,11 @@ import {
   IsObject,
   ValidateNested,
   IsEnum,
+  IsDateString,
+  Min,
+  Max,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   FiatCurrency,
@@ -853,4 +856,169 @@ export class TransactionReceiptDto {
     type: ReceiptDownloadLinksDto,
   })
   download_links: ReceiptDownloadLinksDto;
+}
+
+export class TransactionQueryDto {
+  @ApiPropertyOptional({
+    description: 'Integrator ID to filter by',
+    example: 'int_123456789',
+  })
+  @IsOptional()
+  @IsString()
+  integrator_id?: string;
+
+  @ApiPropertyOptional({
+    description: 'User ID to filter by',
+    example: 'usr_123456789',
+  })
+  @IsOptional()
+  @IsString()
+  user_id?: string;
+
+  @ApiPropertyOptional({
+    description: 'Transaction status to filter by',
+    example: TransactionStatus.COMPLETED,
+    enum: TransactionStatus,
+  })
+  @IsOptional()
+  @IsEnum(TransactionStatus)
+  status?: TransactionStatus;
+
+  @ApiPropertyOptional({
+    description: 'Transaction type to filter by',
+    example: ActivityType.ONRAMP,
+    enum: ActivityType,
+  })
+  @IsOptional()
+  @IsEnum(ActivityType)
+  type?: ActivityType;
+
+  @ApiPropertyOptional({
+    description: 'Start date for filtering (ISO 8601 format)',
+    example: '2023-10-01T00:00:00Z',
+  })
+  @IsOptional()
+  @IsDateString()
+  start_date?: string;
+
+  @ApiPropertyOptional({
+    description: 'End date for filtering (ISO 8601 format)',
+    example: '2023-10-31T23:59:59Z',
+  })
+  @IsOptional()
+  @IsDateString()
+  end_date?: string;
+
+  @ApiPropertyOptional({
+    description: 'Reference code to filter by',
+    example: 'REF_123456789',
+  })
+  @IsOptional()
+  @IsString()
+  reference_code?: string;
+
+  @ApiPropertyOptional({
+    description: 'Number of records per page (1-100)',
+    example: 20,
+    minimum: 1,
+    maximum: 100,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  @Max(100)
+  limit?: number = 20;
+
+  @ApiPropertyOptional({
+    description: 'Page number (starting from 1)',
+    example: 1,
+    minimum: 1,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({
+    description: 'Field to sort by',
+    example: 'created_at',
+    enum: ['created_at', 'completed_at', 'amount'],
+  })
+  @IsOptional()
+  @IsEnum(['created_at', 'completed_at', 'amount'])
+  sort_by?: string = 'created_at';
+
+  @ApiPropertyOptional({
+    description: 'Sort order',
+    example: 'desc',
+    enum: ['asc', 'desc'],
+  })
+  @IsOptional()
+  @IsEnum(['asc', 'desc'])
+  sort_order?: string = 'desc';
+}
+
+export class PaginationDto {
+  @ApiProperty({
+    description: 'Current page number',
+    example: 1,
+  })
+  page: number;
+
+  @ApiProperty({
+    description: 'Number of records per page',
+    example: 20,
+  })
+  limit: number;
+
+  @ApiProperty({
+    description: 'Total number of records',
+    example: 150,
+  })
+  total_records: number;
+
+  @ApiProperty({
+    description: 'Total number of pages',
+    example: 8,
+  })
+  total_pages: number;
+
+  @ApiProperty({
+    description: 'Whether there is a next page',
+    example: true,
+  })
+  has_next: boolean;
+
+  @ApiProperty({
+    description: 'Whether there is a previous page',
+    example: false,
+  })
+  has_previous: boolean;
+}
+
+export class TransactionListResponseDto {
+  @ApiProperty({
+    description: 'List of transactions',
+    type: [TransactionStatusDto],
+  })
+  transactions: TransactionStatusDto[];
+
+  @ApiProperty({
+    description: 'Pagination information',
+    type: PaginationDto,
+  })
+  pagination: PaginationDto;
+
+  @ApiProperty({
+    description: 'Applied filters',
+    example: {
+      status: 'completed',
+      integrator_id: 'int_123456789',
+      start_date: '2023-10-01T00:00:00Z',
+      end_date: '2023-10-31T23:59:59Z',
+    },
+  })
+  filters_applied: Record<string, any>;
 }

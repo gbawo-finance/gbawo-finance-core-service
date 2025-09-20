@@ -9,6 +9,9 @@ import {
   ReceiptPartiesDto,
   ReceiptComplianceDto,
   ReceiptDownloadLinksDto,
+  TransactionQueryDto,
+  TransactionListResponseDto,
+  PaginationDto,
 } from '../common/dto/transactions.dto';
 import {
   TransactionStatus,
@@ -24,15 +27,9 @@ import {
 
 @Injectable()
 export class TransactionsService {
-  async getAllTransactions(): Promise<TransactionStatusDto[]> {
-    // TODO: Implement get all transactions
-    // This would typically involve:
-    // 1. Query database for all transactions
-    // 2. Apply pagination and filtering
-    // 3. Return list of transactions with status
-
-    // Mock data for demonstration
-    const mockTransactions: TransactionStatusDto[] = [
+  async getAllTransactions(query?: TransactionQueryDto): Promise<TransactionListResponseDto> {
+    // Generate more comprehensive mock data for demonstration
+    const allMockTransactions: TransactionStatusDto[] = [
       {
         gbawo_transaction_id: 'gbawo_txn_001',
         reference_code: 'REF_001',
@@ -146,12 +143,202 @@ export class TransactionsService {
           },
         ],
       },
+      {
+        gbawo_transaction_id: 'gbawo_txn_004',
+        reference_code: 'REF_004',
+        status: TransactionStatus.FAILED,
+        activity_type: ActivityType.CRYPTO_EXCHANGE,
+        user_info: {
+          user_id: 'usr_123456789',
+          kyc_level: KycLevel.LEVEL_2,
+          kyc_status: KycStatus.VERIFIED,
+        },
+        created_at: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+        details: {
+          crypto_amount: '0.5',
+          crypto_currency: CryptoCurrency.ETH,
+          crypto_network: CryptoNetwork.ETHEREUM,
+          exchange_rate: 0.5,
+          fees: 10.0,
+        },
+        timeline: [
+          {
+            step: TimelineStep.TRANSACTION_CREATED,
+            status: TimelineStepStatus.COMPLETED,
+            timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+            duration_ms: 500,
+          },
+          {
+            step: TimelineStep.PROCESSING_EXCHANGE,
+            status: TimelineStepStatus.FAILED,
+            timestamp: new Date(Date.now() - 47 * 60 * 60 * 1000).toISOString(),
+            duration_ms: 120000,
+          },
+        ],
+      },
+      {
+        gbawo_transaction_id: 'gbawo_txn_005',
+        reference_code: 'REF_005',
+        status: TransactionStatus.CANCELLED,
+        activity_type: ActivityType.ONRAMP,
+        user_info: {
+          user_id: 'usr_987654321',
+          kyc_level: KycLevel.LEVEL_1,
+          kyc_status: KycStatus.VERIFIED,
+        },
+        created_at: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+        details: {
+          fiat_amount: 50.0,
+          fiat_currency: FiatCurrency.USD,
+          crypto_amount: '0.0005',
+          crypto_currency: CryptoCurrency.BTC,
+          crypto_network: CryptoNetwork.BITCOIN,
+          exchange_rate: 0.00001,
+          fees: 1.0,
+        },
+        timeline: [
+          {
+            step: TimelineStep.TRANSACTION_CREATED,
+            status: TimelineStepStatus.COMPLETED,
+            timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+            duration_ms: 500,
+          },
+          {
+            step: TimelineStep.WAITING_PAYMENT,
+            status: TimelineStepStatus.FAILED,
+            timestamp: new Date(Date.now() - 71 * 60 * 60 * 1000).toISOString(),
+            duration_ms: 3600000,
+          },
+        ],
+      },
     ];
+
+    // Apply filters
+    let filteredTransactions = allMockTransactions;
+
+    if (query) {
+      // Filter by integrator_id (mock: assume all transactions belong to same integrator for demo)
+      if (query.integrator_id) {
+        // In real implementation, filter by integrator_id
+        // For demo, we'll keep all transactions
+      }
+
+      // Filter by user_id
+      if (query.user_id) {
+        filteredTransactions = filteredTransactions.filter(
+          (tx) => tx.user_info.user_id === query.user_id,
+        );
+      }
+
+      // Filter by status
+      if (query.status) {
+        filteredTransactions = filteredTransactions.filter(
+          (tx) => tx.status === query.status,
+        );
+      }
+
+      // Filter by transaction type
+      if (query.type) {
+        filteredTransactions = filteredTransactions.filter(
+          (tx) => tx.activity_type === query.type,
+        );
+      }
+
+      // Filter by reference code
+      if (query.reference_code) {
+        filteredTransactions = filteredTransactions.filter(
+          (tx) => tx.reference_code === query.reference_code,
+        );
+      }
+
+      // Filter by date range
+      if (query.start_date) {
+        const startDate = new Date(query.start_date);
+        filteredTransactions = filteredTransactions.filter(
+          (tx) => new Date(tx.created_at) >= startDate,
+        );
+      }
+
+      if (query.end_date) {
+        const endDate = new Date(query.end_date);
+        filteredTransactions = filteredTransactions.filter(
+          (tx) => new Date(tx.created_at) <= endDate,
+        );
+      }
+
+      // Apply sorting
+      const sortBy = query.sort_by || 'created_at';
+      const sortOrder = query.sort_order || 'desc';
+
+      filteredTransactions.sort((a, b) => {
+        let aValue: any;
+        let bValue: any;
+
+        switch (sortBy) {
+          case 'created_at':
+            aValue = new Date(a.created_at);
+            bValue = new Date(b.created_at);
+            break;
+          case 'completed_at':
+            aValue = a.completed_at ? new Date(a.completed_at) : new Date(0);
+            bValue = b.completed_at ? new Date(b.completed_at) : new Date(0);
+            break;
+          case 'amount':
+            aValue = a.details.fiat_amount || 0;
+            bValue = b.details.fiat_amount || 0;
+            break;
+          default:
+            aValue = new Date(a.created_at);
+            bValue = new Date(b.created_at);
+        }
+
+        if (sortOrder === 'asc') {
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        } else {
+          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+        }
+      });
+    }
+
+    // Apply pagination
+    const page = query?.page || 1;
+    const limit = query?.limit || 20;
+    const totalRecords = filteredTransactions.length;
+    const totalPages = Math.ceil(totalRecords / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+    // Build pagination info
+    const pagination: PaginationDto = {
+      page,
+      limit,
+      total_records: totalRecords,
+      total_pages: totalPages,
+      has_next: page < totalPages,
+      has_previous: page > 1,
+    };
+
+    // Build filters applied object
+    const filtersApplied: Record<string, any> = {};
+    if (query) {
+      Object.keys(query).forEach((key) => {
+        const value = (query as any)[key];
+        if (value !== undefined && value !== null && key !== 'page' && key !== 'limit') {
+          filtersApplied[key] = value;
+        }
+      });
+    }
 
     // Simulate async operation
     await Promise.resolve();
 
-    return mockTransactions;
+    return {
+      transactions: paginatedTransactions,
+      pagination,
+      filters_applied: filtersApplied,
+    };
   }
 
   async getTransactionStatus(
