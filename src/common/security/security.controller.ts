@@ -24,9 +24,9 @@ export class SecurityController {
     description: 'Security events retrieved successfully',
     type: ApiResponseDto,
   })
-  getSecurityEvents(
+  async getSecurityEvents(
     @Query('limit') limit?: number,
-  ): ApiResponseDto<SecurityEvent[]> {
+  ): Promise<ApiResponseDto<SecurityEvent[]>> {
     const eventLimit = Math.min(limit || 50, 100); // Cap at 100 events
     const events = this.securityService.getRecentSecurityEvents(eventLimit);
 
@@ -52,9 +52,9 @@ export class SecurityController {
     description: 'Filtered security events retrieved successfully',
     type: ApiResponseDto,
   })
-  getSecurityEventsByType(
+  async getSecurityEventsByType(
     @Query('type') type: string,
-  ): ApiResponseDto<SecurityEvent[]> {
+  ): Promise<ApiResponseDto<SecurityEvent[]>> {
     const events = this.securityService.getSecurityEventsByType(type);
 
     return ApiResponseDto.success(
@@ -73,7 +73,7 @@ export class SecurityController {
     description: 'Security health check completed',
     type: ApiResponseDto,
   })
-  securityHealth(): ApiResponseDto<any> {
+  async securityHealth(): Promise<ApiResponseDto<any>> {
     const healthData = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
