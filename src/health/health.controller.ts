@@ -1,11 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
   SequelizeHealthIndicator,
 } from '@nestjs/terminus';
 import { ApiResponseDto } from '../common/dto/api-response.dto';
+import { ApiSuccessResponse, ApiErrorResponse } from '../common/decorators/api-response.decorator';
 
 @ApiTags('Health')
 @Controller('health')
@@ -22,22 +23,8 @@ export class HealthController {
     description:
       'Performs a comprehensive health check including database connectivity',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Health check completed successfully',
-    schema: {
-      example: {
-        success: true,
-        message: 'Health check completed successfully',
-        data: {
-          status: 'ok',
-          info: { database: { status: 'up' } },
-          error: {},
-          details: { database: { status: 'up' } },
-        },
-      },
-    },
-  })
+  @ApiSuccessResponse('Health check completed successfully')
+  @ApiErrorResponse(503, 'Health check failed')
   async check(): Promise<ApiResponseDto<any>> {
     try {
       const healthResult = await this.health.check([() => this.db.pingCheck('database')]);
@@ -52,21 +39,7 @@ export class HealthController {
     summary: 'Simple health check',
     description: 'Returns a simple health status with timestamp',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Simple health status',
-    schema: {
-      example: {
-        success: true,
-        message: 'Service is healthy',
-        data: {
-          status: 'ok',
-          timestamp: '2025-01-19T19:13:33.172Z',
-          service: 'gbawo-finance-core-service',
-        },
-      },
-    },
-  })
+  @ApiSuccessResponse('Service is healthy')
   simple(): ApiResponseDto<any> {
     const healthData = {
       status: 'ok',

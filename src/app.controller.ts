@@ -1,7 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ApiResponseDto } from './common/dto/api-response.dto';
+import { ApiSuccessResponse } from './common/decorators/api-response.decorator';
 
 @ApiTags('App')
 @Controller()
@@ -10,10 +11,7 @@ export class AppController {
 
   @Get()
   @ApiOperation({ summary: 'Get API welcome information' })
-  @ApiResponse({
-    status: 200,
-    description: 'API information retrieved successfully',
-  })
+  @ApiSuccessResponse('API information retrieved successfully')
   getWelcome(): ApiResponseDto<any> {
     const welcome = this.appService.getWelcome();
     return ApiResponseDto.success(welcome, 'API information retrieved successfully');

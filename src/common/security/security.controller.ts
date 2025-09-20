@@ -1,7 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from '../dto/api-response.dto';
 import { SecurityEvent, SecurityService } from './security.service';
+import { ApiSuccessResponse } from '../decorators/api-response.decorator';
 
 @ApiTags('Security')
 @Controller('security')
@@ -19,11 +20,7 @@ export class SecurityController {
     type: Number,
     description: 'Number of events to return (max 100)',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Security events retrieved successfully',
-    type: ApiResponseDto,
-  })
+  @ApiSuccessResponse('Security events retrieved successfully')
   async getSecurityEvents(
     @Query('limit') limit?: number,
   ): Promise<ApiResponseDto<SecurityEvent[]>> {
@@ -47,11 +44,7 @@ export class SecurityController {
     type: String,
     description: 'Event type to filter by',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Filtered security events retrieved successfully',
-    type: ApiResponseDto,
-  })
+  @ApiSuccessResponse('Filtered security events retrieved successfully')
   async getSecurityEventsByType(
     @Query('type') type: string,
   ): Promise<ApiResponseDto<SecurityEvent[]>> {
@@ -68,11 +61,7 @@ export class SecurityController {
     summary: 'Security system health check',
     description: 'Check the health of security monitoring systems',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Security health check completed',
-    type: ApiResponseDto,
-  })
+  @ApiSuccessResponse('Security health check completed')
   async securityHealth(): Promise<ApiResponseDto<any>> {
     const healthData = {
       status: 'healthy',
