@@ -23,6 +23,7 @@ import {
   IntegratorSummaryDto,
   IntegratorsListResponseDto,
 } from '../common/dto/integrators.dto';
+import { PaginationUtils } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class IntegratorsService {
@@ -117,31 +118,29 @@ export class IntegratorsService {
     }
 
     // Apply pagination
+    const { page: normalizedPage, limit: normalizedLimit } = PaginationUtils.getDefaultPaginationParams(page, limit);
     const totalCount = filteredIntegrators.length;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
+    const startIndex = (normalizedPage - 1) * normalizedLimit;
+    const endIndex = startIndex + normalizedLimit;
     const paginatedIntegrators = filteredIntegrators.slice(
       startIndex,
       endIndex,
     );
 
-    // Calculate pagination info
-    const totalPages = Math.ceil(totalCount / limit);
+    // Calculate pagination info and active count
+    const paginationMeta = PaginationUtils.createPaginationMeta(
+      normalizedPage,
+      normalizedLimit,
+      totalCount,
+    );
     const activeCount = mockIntegrators.filter(
       (i) => i.status === 'active',
     ).length;
 
     const response: IntegratorsListResponseDto = {
-      integrators: paginatedIntegrators,
-      total_count: totalCount,
+      data: paginatedIntegrators,
+      pagination: paginationMeta,
       active_count: activeCount,
-      pagination: {
-        page: page,
-        limit: limit,
-        total_pages: totalPages,
-        has_next: page < totalPages,
-        has_previous: page > 1,
-      },
     };
 
     // Simulate async operation

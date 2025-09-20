@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from '../common/dto/api-response.dto';
 import {
@@ -8,6 +8,12 @@ import {
   UserProfileDto,
   UpdateUserProfileDto,
   UserKycStatusDto,
+  ReserveAccountNumberDto,
+  ReserveWalletAddressDto,
+  ReservedAccountDto,
+  ReservedWalletDto,
+  ListUsersQueryDto,
+  ListUsersResponseDto,
 } from '../common/dto/users.dto';
 import { UsersService } from './users.service';
 
@@ -15,6 +21,28 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'List users with optional filters' })
+  @ApiResponse({
+    status: 200,
+    description: 'Users retrieved successfully',
+    type: ListUsersResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid query parameters',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied',
+  })
+  async listUsers(
+    @Query() query: ListUsersQueryDto,
+  ): Promise<ApiResponseDto<ListUsersResponseDto>> {
+    const users = await this.usersService.listUsers(query);
+    return ApiResponseDto.success(users, 'Users retrieved successfully');
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create user account' })
@@ -106,7 +134,7 @@ export class UsersController {
     );
   }
 
-  @Put(':userId')
+  @Patch(':userId')
   @ApiOperation({ summary: 'Update user profile' })
   @ApiParam({
     name: 'userId',
@@ -171,6 +199,142 @@ export class UsersController {
     return ApiResponseDto.success(
       kycStatus,
       'KYC status retrieved successfully',
+    );
+  }
+
+  @Post(':userId/accounts/reserve')
+  @ApiOperation({ summary: 'Reserve bank account number for user' })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Account number reserved successfully',
+    type: ReservedAccountDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid reservation request',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied or insufficient KYC level',
+  })
+  async reserveAccountNumber(
+    @Param('userId') userId: string,
+    @Body() reserveAccountDto: ReserveAccountNumberDto,
+  ): Promise<ApiResponseDto<ReservedAccountDto>> {
+    const reservedAccount = await this.usersService.reserveAccountNumber(
+      userId,
+      reserveAccountDto,
+    );
+    return ApiResponseDto.success(
+      reservedAccount,
+      'Account number reserved successfully',
+    );
+  }
+
+  @Post(':userId/wallets/reserve')
+  @ApiOperation({ summary: 'Reserve wallet address for user' })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Wallet address reserved successfully',
+    type: ReservedWalletDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid reservation request',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied or insufficient KYC level',
+  })
+  async reserveWalletAddress(
+    @Param('userId') userId: string,
+    @Body() reserveWalletDto: ReserveWalletAddressDto,
+  ): Promise<ApiResponseDto<ReservedWalletDto>> {
+    const reservedWallet = await this.usersService.reserveWalletAddress(
+      userId,
+      reserveWalletDto,
+    );
+    return ApiResponseDto.success(
+      reservedWallet,
+      'Wallet address reserved successfully',
+    );
+  }
+
+  @Get(':userId/accounts/reserved')
+  @ApiOperation({ summary: 'Get reserved bank accounts for user' })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserved accounts retrieved successfully',
+    type: [ReservedAccountDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied',
+  })
+  async getReservedAccounts(
+    @Param('userId') userId: string,
+  ): Promise<ApiResponseDto<ReservedAccountDto[]>> {
+    const reservedAccounts = await this.usersService.getReservedAccounts(userId);
+    return ApiResponseDto.success(
+      reservedAccounts,
+      'Reserved accounts retrieved successfully',
+    );
+  }
+
+  @Get(':userId/wallets/reserved')
+  @ApiOperation({ summary: 'Get reserved wallet addresses for user' })
+  @ApiParam({
+    name: 'userId',
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserved wallets retrieved successfully',
+    type: [ReservedWalletDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied',
+  })
+  async getReservedWallets(
+    @Param('userId') userId: string,
+  ): Promise<ApiResponseDto<ReservedWalletDto[]>> {
+    const reservedWallets = await this.usersService.getReservedWallets(userId);
+    return ApiResponseDto.success(
+      reservedWallets,
+      'Reserved wallets retrieved successfully',
     );
   }
 }

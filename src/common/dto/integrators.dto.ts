@@ -9,6 +9,7 @@ import {
   IsEmail,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PaginationMetaDto } from './pagination.dto';
 
 export class IntegratorProfileDto {
   @ApiProperty({
@@ -1038,35 +1039,17 @@ export class IntegratorsListResponseDto {
     description: 'List of integrators',
     type: [IntegratorSummaryDto],
   })
-  integrators: IntegratorSummaryDto[];
+  data: IntegratorSummaryDto[];
 
   @ApiProperty({
-    description: 'Total number of integrators',
-    example: 25,
+    description: 'Pagination metadata',
+    type: PaginationMetaDto,
   })
-  total_count: number;
+  pagination: PaginationMetaDto;
 
   @ApiProperty({
     description: 'Number of active integrators',
     example: 22,
   })
   active_count: number;
-
-  @ApiProperty({
-    description: 'Pagination information',
-    example: {
-      page: 1,
-      limit: 20,
-      total_pages: 2,
-      has_next: true,
-      has_previous: false,
-    },
-  })
-  pagination: {
-    page: number;
-    limit: number;
-    total_pages: number;
-    has_next: boolean;
-    has_previous: boolean;
-  };
 }

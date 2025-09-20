@@ -8,7 +8,15 @@ import {
   UserKycStatusDto,
   KycHistoryEntryDto,
   KycDocumentDto,
+  ReserveAccountNumberDto,
+  ReserveWalletAddressDto,
+  ReservedAccountDto,
+  ReservedWalletDto,
+  ListUsersQueryDto,
+  ListUsersResponseDto,
+  UserSummaryDto,
 } from '../common/dto/users.dto';
+import { PaginationUtils } from '../common/dto/pagination.dto';
 import {
   UserAccountStatus,
   KycLevel,
@@ -35,6 +43,7 @@ export class UsersService {
     await Promise.resolve(); // Simulate async operation
     const response: CreateUserResponseDto = {
       user_id: `usr_${Date.now()}`,
+      integrator_id: createUserDto.integrator_id,
       email: createUserDto.email,
       phone: createUserDto.phone,
       first_name: createUserDto.first_name,
@@ -43,6 +52,104 @@ export class UsersService {
       kyc_level: KycLevel.LEVEL_0,
       available_services: ['basic_transfer'],
       created_at: new Date().toISOString(),
+    };
+
+    return response;
+  }
+
+  async listUsers(query: ListUsersQueryDto): Promise<ListUsersResponseDto> {
+    // TODO: Implement user listing with filters
+    // This would typically involve:
+    // 1. Build database query with filters
+    // 2. Apply pagination
+    // 3. Search by email or name if provided
+    // 4. Return paginated results
+
+    await Promise.resolve(); // Simulate async operation
+
+    // Mock user data
+    const mockUsers: UserSummaryDto[] = [
+      {
+        user_id: 'usr_001',
+        integrator_id: query.integrator_id || 'int_123456789',
+        email: 'john.doe@example.com',
+        full_name: 'John Doe',
+        account_status: UserAccountStatus.ACTIVE,
+        kyc_level: KycLevel.LEVEL_2,
+        created_at: '2023-10-01T12:00:00Z',
+        last_activity: '2023-12-01T15:30:00Z',
+      },
+      {
+        user_id: 'usr_002',
+        integrator_id: query.integrator_id || 'int_123456789',
+        email: 'jane.smith@example.com',
+        full_name: 'Jane Smith',
+        account_status: UserAccountStatus.ACTIVE,
+        kyc_level: KycLevel.LEVEL_1,
+        created_at: '2023-10-15T10:30:00Z',
+        last_activity: '2023-11-30T14:20:00Z',
+      },
+      {
+        user_id: 'usr_003',
+        integrator_id: query.integrator_id || 'int_987654321',
+        email: 'bob.wilson@example.com',
+        full_name: 'Bob Wilson',
+        account_status: UserAccountStatus.SUSPENDED,
+        kyc_level: KycLevel.LEVEL_0,
+        created_at: '2023-11-01T09:15:00Z',
+        last_activity: '2023-11-28T11:45:00Z',
+      },
+    ];
+
+    // Apply filters
+    let filteredUsers = mockUsers;
+
+    if (query.integrator_id) {
+      filteredUsers = filteredUsers.filter(
+        (user) => user.integrator_id === query.integrator_id,
+      );
+    }
+
+    if (query.status) {
+      filteredUsers = filteredUsers.filter(
+        (user) => user.account_status === query.status,
+      );
+    }
+
+    if (query.kyc_level) {
+      filteredUsers = filteredUsers.filter(
+        (user) => user.kyc_level === query.kyc_level,
+      );
+    }
+
+    if (query.search) {
+      const searchTerm = query.search.toLowerCase();
+      filteredUsers = filteredUsers.filter(
+        (user) =>
+          user.email.toLowerCase().includes(searchTerm) ||
+          user.full_name.toLowerCase().includes(searchTerm),
+      );
+    }
+
+    // Apply pagination
+    const { page, limit } = PaginationUtils.getDefaultPaginationParams(
+      query.page,
+      query.limit,
+    );
+    const total = filteredUsers.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+    const paginationMeta = PaginationUtils.createPaginationMeta(
+      page,
+      limit,
+      total,
+    );
+
+    const response: ListUsersResponseDto = {
+      data: paginatedUsers,
+      pagination: paginationMeta,
     };
 
     return response;
@@ -79,6 +186,7 @@ export class UsersService {
     // Mock user profile data
     const profile: UserProfileDto = {
       user_id: userId,
+      integrator_id: 'int_123456789', // Would come from database in real implementation
       email: 'john.doe@example.com',
       phone_number: '+1234567890',
       first_name: 'John',
@@ -117,13 +225,14 @@ export class UsersService {
     // Mock updated profile - merge with existing data
     const updatedProfile: UserProfileDto = {
       user_id: userId,
+      integrator_id: 'int_123456789', // Would come from database in real implementation
       email: 'john.doe@example.com', // Email typically not updatable via this endpoint
       phone_number: updateData.phone_number || '+1234567890',
       first_name: updateData.first_name || 'John',
       last_name: updateData.last_name || 'Doe',
       date_of_birth: updateData.date_of_birth || '1990-01-15',
       country: (updateData.country as SupportedCountry) || SupportedCountry.US,
-      status: UserAccountStatus.ACTIVE,
+      status: updateData.status || UserAccountStatus.ACTIVE,
       kyc_level: KycLevel.LEVEL_2,
       kyc_status: KycStatus.VERIFIED,
       created_at: '2023-11-01T10:30:00Z',
@@ -211,5 +320,171 @@ export class UsersService {
     await Promise.resolve();
 
     return kycStatus;
+  }
+
+  async reserveAccountNumber(
+    userId: string,
+    reserveAccountDto: ReserveAccountNumberDto,
+  ): Promise<ReservedAccountDto> {
+    // TODO: Implement account number reservation logic
+    // This would typically involve:
+    // 1. Validate user exists and has sufficient KYC level
+    // 2. Check if user already has reserved account for this country
+    // 3. Call external banking provider to reserve account
+    // 4. Store reservation details in database
+    // 5. Return reserved account information
+
+    await Promise.resolve(); // Simulate async operation
+
+    // Mock reserved account data
+    const reservedAccount: ReservedAccountDto = {
+      account_id: `acc_${Date.now()}`,
+      user_id: userId,
+      account_number: `${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+      routing_number: '021000021',
+      bank_name: 'Gbawo Partner Bank',
+      bank_code: 'GBAWO001',
+      country: reserveAccountDto.country,
+      currency: reserveAccountDto.currency || FiatCurrency.USD,
+      status: 'active',
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
+      metadata: reserveAccountDto.metadata,
+    };
+
+    return reservedAccount;
+  }
+
+  async reserveWalletAddress(
+    userId: string,
+    reserveWalletDto: ReserveWalletAddressDto,
+  ): Promise<ReservedWalletDto> {
+    // TODO: Implement wallet address reservation logic
+    // This would typically involve:
+    // 1. Validate user exists and has sufficient KYC level
+    // 2. Validate cryptocurrency and network combination
+    // 3. Call external crypto provider to generate wallet address
+    // 4. Store wallet details in database
+    // 5. Return reserved wallet information
+
+    await Promise.resolve(); // Simulate async operation
+
+    // Mock wallet address generation based on crypto type
+    let mockAddress: string;
+    switch (reserveWalletDto.crypto_currency.toUpperCase()) {
+      case 'BTC':
+        mockAddress = `1${Math.random().toString(36).substring(2, 35)}`;
+        break;
+      case 'ETH':
+      case 'USDT':
+      case 'USDC':
+        mockAddress = `0x${Math.random().toString(16).substring(2, 42)}`;
+        break;
+      default:
+        mockAddress = `addr_${Math.random().toString(36).substring(2, 35)}`;
+    }
+
+    const reservedWallet: ReservedWalletDto = {
+      wallet_id: `wal_${Date.now()}`,
+      user_id: userId,
+      address: mockAddress,
+      crypto_currency: reserveWalletDto.crypto_currency.toUpperCase(),
+      network: reserveWalletDto.network,
+      status: 'active',
+      created_at: new Date().toISOString(),
+      metadata: reserveWalletDto.metadata,
+    };
+
+    return reservedWallet;
+  }
+
+  async getReservedAccounts(userId: string): Promise<ReservedAccountDto[]> {
+    // TODO: Implement reserved accounts retrieval
+    // This would typically involve:
+    // 1. Validate user exists
+    // 2. Query database for user's reserved accounts
+    // 3. Return list of reserved accounts
+
+    await Promise.resolve(); // Simulate async operation
+
+    // Mock reserved accounts data
+    const reservedAccounts: ReservedAccountDto[] = [
+      {
+        account_id: 'acc_001',
+        user_id: userId,
+        account_number: '1234567890',
+        routing_number: '021000021',
+        bank_name: 'Gbawo Partner Bank',
+        bank_code: 'GBAWO001',
+        country: SupportedCountry.US,
+        currency: FiatCurrency.USD,
+        status: 'active',
+        created_at: '2023-12-01T10:30:00Z',
+        expires_at: '2024-12-01T10:30:00Z',
+        metadata: { purpose: 'primary', account_type: 'checking' },
+      },
+      {
+        account_id: 'acc_002',
+        user_id: userId,
+        account_number: '9876543210',
+        routing_number: '026009593',
+        bank_name: 'Gbawo Partner Bank EU',
+        bank_code: 'GBAWO002',
+        country: SupportedCountry.EU,
+        currency: FiatCurrency.EUR,
+        status: 'active',
+        created_at: '2023-11-15T14:20:00Z',
+        expires_at: '2024-11-15T14:20:00Z',
+        metadata: { purpose: 'secondary', account_type: 'savings' },
+      },
+    ];
+
+    return reservedAccounts;
+  }
+
+  async getReservedWallets(userId: string): Promise<ReservedWalletDto[]> {
+    // TODO: Implement reserved wallets retrieval
+    // This would typically involve:
+    // 1. Validate user exists
+    // 2. Query database for user's reserved wallets
+    // 3. Return list of reserved wallets
+
+    await Promise.resolve(); // Simulate async operation
+
+    // Mock reserved wallets data
+    const reservedWallets: ReservedWalletDto[] = [
+      {
+        wallet_id: 'wal_001',
+        user_id: userId,
+        address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+        crypto_currency: 'BTC',
+        network: 'bitcoin',
+        status: 'active',
+        created_at: '2023-12-01T10:30:00Z',
+        metadata: { purpose: 'trading', wallet_type: 'hot' },
+      },
+      {
+        wallet_id: 'wal_002',
+        user_id: userId,
+        address: '0x742d35Cc6634C0532925a3b8D4C9db96DfB3f684',
+        crypto_currency: 'ETH',
+        network: 'ethereum',
+        status: 'active',
+        created_at: '2023-11-20T16:45:00Z',
+        metadata: { purpose: 'savings', wallet_type: 'cold' },
+      },
+      {
+        wallet_id: 'wal_003',
+        user_id: userId,
+        address: '0x8ba1f109551bD432803012645Hac136c22C501e5',
+        crypto_currency: 'USDT',
+        network: 'ethereum',
+        status: 'active',
+        created_at: '2023-11-25T09:15:00Z',
+        metadata: { purpose: 'stablecoin', wallet_type: 'hot' },
+      },
+    ];
+
+    return reservedWallets;
   }
 }

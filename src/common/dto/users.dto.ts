@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsEnum,
   IsOptional,
+  IsObject,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
@@ -17,8 +18,17 @@ import {
   SupportedCountry,
   FiatCurrency,
 } from '../enums';
+import { PaginationQueryDto, PaginationMetaDto } from './pagination.dto';
 
 export class CreateUserDto {
+  @ApiProperty({
+    description: 'Integrator ID that the user belongs to',
+    example: 'int_123456789',
+  })
+  @IsString()
+  @IsNotEmpty()
+  integrator_id: string;
+
   @ApiProperty({
     description: 'User email address',
     example: 'user@example.com',
@@ -56,6 +66,12 @@ export class CreateUserResponseDto {
     example: 'usr_123456789',
   })
   user_id: string;
+
+  @ApiProperty({
+    description: 'Integrator ID that the user belongs to',
+    example: 'int_123456789',
+  })
+  integrator_id: string;
 
   @ApiProperty({
     description: 'User email address',
@@ -109,6 +125,108 @@ export class CreateUserResponseDto {
   created_at: string;
 }
 
+export class ListUsersQueryDto extends PaginationQueryDto {
+  @ApiPropertyOptional({
+    description: 'Integrator ID to filter users',
+    example: 'int_123456789',
+  })
+  @IsOptional()
+  @IsString()
+  integrator_id?: string;
+
+  @ApiPropertyOptional({
+    description: 'User account status filter',
+    example: UserAccountStatus.ACTIVE,
+    enum: UserAccountStatus,
+  })
+  @IsOptional()
+  @IsEnum(UserAccountStatus)
+  status?: UserAccountStatus;
+
+  @ApiPropertyOptional({
+    description: 'KYC level filter',
+    example: KycLevel.LEVEL_1,
+    enum: KycLevel,
+  })
+  @IsOptional()
+  @IsEnum(KycLevel)
+  kyc_level?: KycLevel;
+
+  @ApiPropertyOptional({
+    description: 'Search term for email or name',
+    example: 'john',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
+}
+
+export class UserSummaryDto {
+  @ApiProperty({
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  user_id: string;
+
+  @ApiProperty({
+    description: 'Integrator ID that the user belongs to',
+    example: 'int_123456789',
+  })
+  integrator_id: string;
+
+  @ApiProperty({
+    description: 'User email address',
+    example: 'john.doe@example.com',
+  })
+  email: string;
+
+  @ApiProperty({
+    description: 'User full name',
+    example: 'John Doe',
+  })
+  full_name: string;
+
+  @ApiProperty({
+    description: 'User account status',
+    example: UserAccountStatus.ACTIVE,
+    enum: UserAccountStatus,
+  })
+  account_status: UserAccountStatus;
+
+  @ApiProperty({
+    description: 'User KYC level',
+    example: KycLevel.LEVEL_1,
+    enum: KycLevel,
+  })
+  kyc_level: KycLevel;
+
+  @ApiProperty({
+    description: 'User creation timestamp',
+    example: '2023-10-01T12:00:00Z',
+  })
+  created_at: string;
+
+  @ApiProperty({
+    description: 'Last activity timestamp',
+    example: '2023-12-01T15:30:00Z',
+  })
+  last_activity?: string;
+}
+
+export class ListUsersResponseDto {
+  @ApiProperty({
+    description: 'List of users',
+    type: [UserSummaryDto],
+  })
+  data: UserSummaryDto[];
+
+  @ApiProperty({
+    description: 'Pagination metadata',
+    type: PaginationMetaDto,
+  })
+  pagination: PaginationMetaDto;
+}
+
 export class SubmitKycDto {
   @ApiProperty({
     description: 'User ID',
@@ -132,6 +250,12 @@ export class UserProfileDto {
     example: 'usr_123456789',
   })
   user_id: string;
+
+  @ApiProperty({
+    description: 'Integrator ID that the user belongs to',
+    example: 'int_123456789',
+  })
+  integrator_id: string;
 
   @ApiProperty({
     description: 'User email address',
@@ -262,6 +386,15 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsString()
   country?: string;
+
+  @ApiPropertyOptional({
+    description: 'User account status',
+    example: UserAccountStatus.ACTIVE,
+    enum: UserAccountStatus,
+  })
+  @IsOptional()
+  @IsEnum(UserAccountStatus)
+  status?: UserAccountStatus;
 }
 
 export class KycDocumentDto {
@@ -416,4 +549,183 @@ export class UserKycStatusDto {
     example: '2023-11-15T10:45:00Z',
   })
   last_updated: string;
+}
+
+export class ReserveAccountNumberDto {
+  @ApiProperty({
+    description: 'Country code for account reservation',
+    example: SupportedCountry.US,
+    enum: SupportedCountry,
+  })
+  @IsEnum(SupportedCountry)
+  country: SupportedCountry;
+
+  @ApiPropertyOptional({
+    description: 'Preferred currency for the account',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
+  })
+  @IsOptional()
+  @IsEnum(FiatCurrency)
+  currency?: FiatCurrency;
+
+  @ApiPropertyOptional({
+    description: 'Additional metadata for account reservation',
+    example: { purpose: 'savings', account_type: 'personal' },
+  })
+  @IsOptional()
+  @IsObject()
+  metadata?: Record<string, any>;
+}
+
+export class ReserveWalletAddressDto {
+  @ApiProperty({
+    description: 'Cryptocurrency to reserve wallet for',
+    example: 'BTC',
+  })
+  @IsString()
+  @IsNotEmpty()
+  crypto_currency: string;
+
+  @ApiProperty({
+    description: 'Network for the cryptocurrency',
+    example: 'bitcoin',
+  })
+  @IsString()
+  @IsNotEmpty()
+  network: string;
+
+  @ApiPropertyOptional({
+    description: 'Additional metadata for wallet reservation',
+    example: { purpose: 'trading', wallet_type: 'hot' },
+  })
+  @IsOptional()
+  @IsObject()
+  metadata?: Record<string, any>;
+}
+
+export class ReservedAccountDto {
+  @ApiProperty({
+    description: 'Reserved account ID',
+    example: 'acc_123456789',
+  })
+  account_id: string;
+
+  @ApiProperty({
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  user_id: string;
+
+  @ApiProperty({
+    description: 'Account number',
+    example: '1234567890',
+  })
+  account_number: string;
+
+  @ApiProperty({
+    description: 'Routing number',
+    example: '021000021',
+  })
+  routing_number: string;
+
+  @ApiProperty({
+    description: 'Bank name',
+    example: 'Gbawo Partner Bank',
+  })
+  bank_name: string;
+
+  @ApiProperty({
+    description: 'Bank code',
+    example: 'GBAWO001',
+  })
+  bank_code: string;
+
+  @ApiProperty({
+    description: 'Country code',
+    example: SupportedCountry.US,
+    enum: SupportedCountry,
+  })
+  country: SupportedCountry;
+
+  @ApiProperty({
+    description: 'Account currency',
+    example: FiatCurrency.USD,
+    enum: FiatCurrency,
+  })
+  currency: FiatCurrency;
+
+  @ApiProperty({
+    description: 'Account status',
+    example: 'active',
+  })
+  status: string;
+
+  @ApiProperty({
+    description: 'Account creation timestamp',
+    example: '2023-12-01T10:30:00Z',
+  })
+  created_at: string;
+
+  @ApiProperty({
+    description: 'Account expiration timestamp',
+    example: '2024-12-01T10:30:00Z',
+  })
+  expires_at: string;
+
+  @ApiPropertyOptional({
+    description: 'Additional account metadata',
+    example: { purpose: 'savings', account_type: 'personal' },
+  })
+  metadata?: Record<string, any>;
+}
+
+export class ReservedWalletDto {
+  @ApiProperty({
+    description: 'Reserved wallet ID',
+    example: 'wal_123456789',
+  })
+  wallet_id: string;
+
+  @ApiProperty({
+    description: 'User ID',
+    example: 'usr_123456789',
+  })
+  user_id: string;
+
+  @ApiProperty({
+    description: 'Wallet address',
+    example: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+  })
+  address: string;
+
+  @ApiProperty({
+    description: 'Cryptocurrency',
+    example: 'BTC',
+  })
+  crypto_currency: string;
+
+  @ApiProperty({
+    description: 'Network',
+    example: 'bitcoin',
+  })
+  network: string;
+
+  @ApiProperty({
+    description: 'Wallet status',
+    example: 'active',
+  })
+  status: string;
+
+  @ApiProperty({
+    description: 'Wallet creation timestamp',
+    example: '2023-12-01T10:30:00Z',
+  })
+  created_at: string;
+
+  @ApiPropertyOptional({
+    description: 'Additional wallet metadata',
+    example: { purpose: 'trading', wallet_type: 'hot' },
+  })
+  metadata?: Record<string, any>;
 }

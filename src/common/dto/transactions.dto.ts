@@ -24,6 +24,7 @@ import {
   KycLevel,
   KycStatus,
 } from '../enums';
+import { PaginationQueryDto, PaginationMetaDto } from './pagination.dto';
 
 export class RecipientDetailsDto {
   @ApiProperty({
@@ -858,7 +859,7 @@ export class TransactionReceiptDto {
   download_links: ReceiptDownloadLinksDto;
 }
 
-export class TransactionQueryDto {
+export class TransactionQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({
     description: 'Integrator ID to filter by',
     example: 'int_123456789',
@@ -917,29 +918,6 @@ export class TransactionQueryDto {
   @IsString()
   reference_code?: string;
 
-  @ApiPropertyOptional({
-    description: 'Number of records per page (1-100)',
-    example: 20,
-    minimum: 1,
-    maximum: 100,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  @Max(100)
-  limit?: number = 20;
-
-  @ApiPropertyOptional({
-    description: 'Page number (starting from 1)',
-    example: 1,
-    minimum: 1,
-  })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  page?: number = 1;
 
   @ApiPropertyOptional({
     description: 'Field to sort by',
@@ -960,56 +938,19 @@ export class TransactionQueryDto {
   sort_order?: string = 'desc';
 }
 
-export class PaginationDto {
-  @ApiProperty({
-    description: 'Current page number',
-    example: 1,
-  })
-  page: number;
-
-  @ApiProperty({
-    description: 'Number of records per page',
-    example: 20,
-  })
-  limit: number;
-
-  @ApiProperty({
-    description: 'Total number of records',
-    example: 150,
-  })
-  total_records: number;
-
-  @ApiProperty({
-    description: 'Total number of pages',
-    example: 8,
-  })
-  total_pages: number;
-
-  @ApiProperty({
-    description: 'Whether there is a next page',
-    example: true,
-  })
-  has_next: boolean;
-
-  @ApiProperty({
-    description: 'Whether there is a previous page',
-    example: false,
-  })
-  has_previous: boolean;
-}
 
 export class TransactionListResponseDto {
   @ApiProperty({
     description: 'List of transactions',
     type: [TransactionStatusDto],
   })
-  transactions: TransactionStatusDto[];
+  data: TransactionStatusDto[];
 
   @ApiProperty({
-    description: 'Pagination information',
-    type: PaginationDto,
+    description: 'Pagination metadata',
+    type: PaginationMetaDto,
   })
-  pagination: PaginationDto;
+  pagination: PaginationMetaDto;
 
   @ApiProperty({
     description: 'Applied filters',

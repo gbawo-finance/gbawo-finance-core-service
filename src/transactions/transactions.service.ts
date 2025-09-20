@@ -11,8 +11,8 @@ import {
   ReceiptDownloadLinksDto,
   TransactionQueryDto,
   TransactionListResponseDto,
-  PaginationDto,
 } from '../common/dto/transactions.dto';
+import { PaginationUtils } from '../common/dto/pagination.dto';
 import {
   TransactionStatus,
   ActivityType,
@@ -301,24 +301,22 @@ export class TransactionsService {
     }
 
     // Apply pagination
-    const page = query?.page || 1;
-    const limit = query?.limit || 20;
+    const { page, limit } = PaginationUtils.getDefaultPaginationParams(
+      query?.page,
+      query?.limit,
+    );
     const totalRecords = filteredTransactions.length;
-    const totalPages = Math.ceil(totalRecords / limit);
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
 
     const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
 
     // Build pagination info
-    const pagination: PaginationDto = {
+    const pagination = PaginationUtils.createPaginationMeta(
       page,
       limit,
-      total_records: totalRecords,
-      total_pages: totalPages,
-      has_next: page < totalPages,
-      has_previous: page > 1,
-    };
+      totalRecords,
+    );
 
     // Build filters applied object
     const filtersApplied: Record<string, any> = {};
@@ -335,7 +333,7 @@ export class TransactionsService {
     await Promise.resolve();
 
     return {
-      transactions: paginatedTransactions,
+      data: paginatedTransactions,
       pagination,
       filters_applied: filtersApplied,
     };
