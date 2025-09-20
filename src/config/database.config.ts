@@ -4,6 +4,7 @@ import {
   SequelizeModuleOptions,
   SequelizeOptionsFactory,
 } from '@nestjs/sequelize';
+import { Dialect } from 'sequelize';
 
 @Injectable()
 export class DatabaseConfigService implements SequelizeOptionsFactory {
@@ -14,7 +15,10 @@ export class DatabaseConfigService implements SequelizeOptionsFactory {
     const isDevelopment = nodeEnv === 'development';
 
     return {
-      dialect: 'postgres',
+      dialect: this.configService.get<string>(
+        'DB_DIALECT',
+        'postgres',
+      ) as Dialect,
       host: this.configService.get<string>('DB_HOST'),
       port: this.configService.get<number>('DB_PORT'),
       username: this.configService.get<string>('DB_USERNAME'),

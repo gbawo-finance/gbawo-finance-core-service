@@ -10,7 +10,6 @@ export class AppService {
       endpoints: {
         health: '/health',
         documentation: '/api/docs',
-        api: '/api/v1',
       },
       timestamp: new Date().toISOString(),
     };

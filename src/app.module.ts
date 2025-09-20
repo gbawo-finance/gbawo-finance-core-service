@@ -7,6 +7,13 @@ import { SecurityModule } from './common/security/security.module';
 import { DatabaseConfigService } from './config/database.config';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
+import { UsersModule } from './users/users.module';
+import { RatesModule } from './rates/rates.module';
+import { TransactionsModule } from './transactions/transactions.module';
+import { FiatModule } from './fiat/fiat.module';
+import { CryptoModule } from './crypto/crypto.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { IntegratorsModule } from './integrators/integrators.module';
 
 @Module({
   imports: [
@@ -21,6 +28,13 @@ import { HealthModule } from './health/health.module';
     }),
     HealthModule,
     SecurityModule,
+    UsersModule,
+    RatesModule,
+    TransactionsModule,
+    FiatModule,
+    CryptoModule,
+    WebhooksModule,
+    IntegratorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,7 +3,7 @@ import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseDto } from '../dto/api-response.dto';
 import { SecurityEvent, SecurityService } from './security.service';
 
-@ApiTags('security')
+@ApiTags('Security')
 @Controller('security')
 export class SecurityController {
   constructor(private readonly securityService: SecurityService) {}

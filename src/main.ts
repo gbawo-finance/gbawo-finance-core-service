@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import compression from 'compression';
+import * as compression from 'compression';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -26,17 +26,13 @@ async function bootstrap() {
   app.use(
     helmet({
       contentSecurityPolicy: securityConfigService.getCSPConfig(),
-      crossOriginEmbedderPolicy: false, // Disable for internal service compatibility
-      hsts: false, // Disable HSTS as requested (no HTTPS requirement)
+      crossOriginEmbedderPolicy: false,
+      hsts: false,
     }),
   );
 
   // Request compression
   app.use(compression());
-
-  // Note: Temporarily commented out mongo sanitization due to compatibility issues
-  // TODO: Implement custom sanitization solution
-  // app.use(mongoSanitize());
 
   // Enhanced CORS configuration for internal service (from environment variables)
   interface CorsConfig {
@@ -89,11 +85,6 @@ async function bootstrap() {
   app.useGlobalFilters(securityExceptionFilter);
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Global prefix for API routes
-  app.setGlobalPrefix('api/v1', {
-    exclude: ['health', 'health/simple'],
-  });
-
   // Swagger documentation setup with security considerations
   const config = new DocumentBuilder()
     .setTitle('Gbawo Finance Core Service')
@@ -101,8 +92,6 @@ async function bootstrap() {
       'Core financial services API for the Gbawo Finance platform',
     )
     .setVersion('1.0')
-    .addTag('health', 'Health check endpoints')
-    .addTag('security', 'Security-related endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -111,8 +100,6 @@ async function bootstrap() {
       persistAuthorization: true,
     },
     customSiteTitle: 'Gbawo Finance API Documentation',
-    customfavIcon:
-      'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><text y="14" font-size="16">🏦</text></svg>',
   });
 
   // Get port from config service (validated at startup)
@@ -124,19 +111,5 @@ async function bootstrap() {
   console.log(
     `📚 API Documentation available at: http://localhost:${port}/api/docs`,
   );
-  console.log(`🛡️  Security measures enabled for internal service`);
-
-  // Log startup security configuration
-  securityService.logSecurityEvent('SERVICE_STARTED', {
-    port,
-    timestamp: new Date().toISOString(),
-    securityFeatures: [
-      'helmet',
-      'compression',
-      'input-sanitization',
-      'cors',
-      'validation',
-    ],
-  });
 }
 void bootstrap();
