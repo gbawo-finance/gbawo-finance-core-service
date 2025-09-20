@@ -53,3 +53,12 @@ export enum ReconciliationStatus {
   UNMATCHED = 'unmatched',
   PENDING = 'pending',
 }
+
+export enum CancellationReason {
+  USER_REQUESTED = 'user_requested',
+  TIMEOUT = 'timeout',
+  COMPLIANCE_ISSUE = 'compliance_issue',
+  TECHNICAL_ERROR = 'technical_error',
+  RATE_EXPIRED = 'rate_expired',
+  INSUFFICIENT_FUNDS = 'insufficient_funds',
+}

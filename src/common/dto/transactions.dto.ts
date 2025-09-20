@@ -23,6 +23,7 @@ import {
   TimelineStepStatus,
   KycLevel,
   KycStatus,
+  CancellationReason,
 } from '../enums';
 import { PaginationQueryDto, PaginationMetaDto } from './pagination.dto';
 
@@ -962,4 +963,175 @@ export class TransactionListResponseDto {
     },
   })
   filters_applied: Record<string, any>;
+}
+
+// Transaction Cancellation DTOs
+export class CancelTransactionRequestDto {
+  @ApiProperty({
+    description: 'Cancellation reason',
+    example: CancellationReason.USER_REQUESTED,
+    enum: CancellationReason,
+  })
+  @IsEnum(CancellationReason)
+  reason: CancellationReason;
+
+  @ApiPropertyOptional({
+    description: 'Optional notes explaining the cancellation',
+    example: 'Customer changed their mind about the transaction',
+    maxLength: 500,
+  })
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}
+
+export class RefundDetailsDto {
+  @ApiProperty({
+    description: 'Whether a refund is required',
+    example: false,
+  })
+  refund_required: boolean;
+
+  @ApiProperty({
+    description: 'Refund amount',
+    example: 0,
+  })
+  refund_amount: number;
+
+  @ApiPropertyOptional({
+    description: 'Refund currency',
+    example: null,
+  })
+  refund_currency?: string;
+
+  @ApiPropertyOptional({
+    description: 'Estimated refund time',
+    example: null,
+  })
+  estimated_refund_time?: string;
+}
+
+export class CancelTransactionResponseDto {
+  @ApiProperty({
+    description: 'Success status',
+    example: true,
+  })
+  success: boolean;
+
+  @ApiProperty({
+    description: 'Transaction ID',
+    example: 'txn_abc123',
+  })
+  transaction_id: string;
+
+  @ApiProperty({
+    description: 'Previous transaction status',
+    example: TransactionStatus.PENDING_PAYMENT,
+    enum: TransactionStatus,
+  })
+  previous_status: TransactionStatus;
+
+  @ApiProperty({
+    description: 'New transaction status',
+    example: TransactionStatus.CANCELLED,
+    enum: TransactionStatus,
+  })
+  new_status: TransactionStatus;
+
+  @ApiProperty({
+    description: 'Cancellation timestamp',
+    example: '2023-12-01T15:30:00Z',
+  })
+  cancelled_at: string;
+
+  @ApiProperty({
+    description: 'Cancellation reason',
+    example: CancellationReason.USER_REQUESTED,
+    enum: CancellationReason,
+  })
+  cancellation_reason: CancellationReason;
+
+  @ApiPropertyOptional({
+    description: 'Cancellation notes',
+    example: 'Customer changed their mind',
+  })
+  cancellation_notes?: string;
+
+  @ApiProperty({
+    description: 'Refund details',
+    type: RefundDetailsDto,
+  })
+  refund_details: RefundDetailsDto;
+}
+
+export class CancellationErrorDetailsDto {
+  @ApiProperty({
+    description: 'Current transaction status',
+    example: TransactionStatus.PROCESSING,
+    enum: TransactionStatus,
+  })
+  current_status: TransactionStatus;
+
+  @ApiProperty({
+    description: 'Transaction ID',
+    example: 'txn_abc123',
+  })
+  transaction_id: string;
+
+  @ApiProperty({
+    description: 'Reason why cancellation is not allowed',
+    example: 'Transaction has progressed beyond cancellable state',
+  })
+  reason: string;
+
+  @ApiPropertyOptional({
+    description: 'Alternative actions available',
+    example: ['contact_support'],
+    type: [String],
+  })
+  alternative_actions?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Amount of funds already received',
+    example: 500.00,
+  })
+  funds_received?: number;
+
+  @ApiPropertyOptional({
+    description: 'Total expected amount',
+    example: 1000.00,
+  })
+  total_expected?: number;
+
+  @ApiPropertyOptional({
+    description: 'Support reference for suspended transactions',
+    example: 'SUSP-2023-001547',
+  })
+  support_reference?: string;
+}
+
+export class CancellationErrorResponseDto {
+  @ApiProperty({
+    description: 'Success status',
+    example: false,
+  })
+  success: boolean;
+
+  @ApiProperty({
+    description: 'Error code',
+    example: 'cancellation_not_allowed',
+  })
+  error: string;
+
+  @ApiProperty({
+    description: 'Error message',
+    example: 'Transaction cannot be cancelled - already processing',
+  })
+  message: string;
+
+  @ApiProperty({
+    description: 'Additional error details',
+    type: CancellationErrorDetailsDto,
+  })
+  details: CancellationErrorDetailsDto;
 }

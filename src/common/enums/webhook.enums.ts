@@ -10,6 +10,7 @@ export enum WebhookEventType {
   KYC_VERIFICATION_COMPLETED = 'kyc.verification_completed',
   TRANSACTION_COMPLETED = 'transaction.completed',
   TRANSACTION_FAILED = 'transaction.failed',
+  TRANSACTION_CANCELLED = 'transaction.cancelled',
   KYC_VERIFIED = 'kyc.verified',
 }
 

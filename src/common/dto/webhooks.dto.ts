@@ -18,6 +18,7 @@ import {
   VerificationStatus,
   DocumentType,
   DocumentStatus,
+  CancellationReason,
 } from '../enums';
 
 export class WebhookPayloadDto {
@@ -507,4 +508,79 @@ export class KycWebhookPayloadDto {
   })
   @IsObject()
   data: KycVerificationCompletedDataDto;
+}
+
+export class TransactionCancelledDataDto {
+  @ApiProperty({
+    description: 'Previous transaction status',
+    example: TransactionStatus.PENDING_PAYMENT,
+    enum: TransactionStatus,
+  })
+  previous_status: TransactionStatus;
+
+  @ApiProperty({
+    description: 'Cancellation reason',
+    example: CancellationReason.USER_REQUESTED,
+    enum: CancellationReason,
+  })
+  cancellation_reason: CancellationReason;
+
+  @ApiProperty({
+    description: 'Who cancelled the transaction',
+    example: 'integrator',
+  })
+  cancelled_by: string;
+
+  @ApiProperty({
+    description: 'Whether a refund is required',
+    example: false,
+  })
+  refund_required: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Cancellation notes',
+    example: 'Customer changed their mind',
+  })
+  cancellation_notes?: string;
+}
+
+export class TransactionCancelledWebhookDto {
+  @ApiProperty({
+    description: 'Event type',
+    example: WebhookEventType.TRANSACTION_CANCELLED,
+    enum: [WebhookEventType.TRANSACTION_CANCELLED],
+  })
+  @IsEnum([WebhookEventType.TRANSACTION_CANCELLED])
+  event_type: WebhookEventType.TRANSACTION_CANCELLED;
+
+  @ApiProperty({
+    description: 'Event timestamp',
+    example: '2023-12-01T15:30:00Z',
+  })
+  @IsString()
+  @IsNotEmpty()
+  timestamp: string;
+
+  @ApiProperty({
+    description: 'Transaction ID',
+    example: 'txn_abc123',
+  })
+  @IsString()
+  @IsNotEmpty()
+  transaction_id: string;
+
+  @ApiProperty({
+    description: 'Integrator ID',
+    example: 'int_123456789',
+  })
+  @IsString()
+  @IsNotEmpty()
+  integrator_id: string;
+
+  @ApiProperty({
+    description: 'Transaction cancellation data',
+    type: TransactionCancelledDataDto,
+  })
+  @IsObject()
+  data: TransactionCancelledDataDto;
 }

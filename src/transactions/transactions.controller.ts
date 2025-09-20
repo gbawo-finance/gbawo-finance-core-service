@@ -1,11 +1,14 @@
-import { Body, Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Query, Put, HttpCode } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { TransactionsService } from './transactions.service';
 import {
   TransactionStatusDto,
   TransactionReceiptDto,
   TransactionQueryDto,
   TransactionListResponseDto,
+  CancelTransactionRequestDto,
+  CancelTransactionResponseDto,
+  CancellationErrorResponseDto,
 } from '../common/dto/transactions.dto';
 import { ApiResponseDto } from '../common/dto/api-response.dto';
 
@@ -159,6 +162,55 @@ export class TransactionsController {
     return ApiResponseDto.success(
       receipt,
       'Transaction receipt retrieved successfully',
+    );
+  }
+
+  @Put('transactions/:transactionId/cancel')
+  @HttpCode(200)
+  @ApiOperation({ 
+    summary: 'Cancel a transaction',
+    description: 'Cancel a transaction if it meets cancellation criteria. Enforces strict business rules to prevent financial loss and ensure data integrity.'
+  })
+  @ApiParam({
+    name: 'transactionId',
+    description: 'The transaction ID to cancel',
+    example: 'txn_abc123',
+  })
+  @ApiBody({
+    type: CancelTransactionRequestDto,
+    description: 'Cancellation request details',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Transaction cancelled successfully',
+    type: CancelTransactionResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Transaction cannot be cancelled',
+    type: CancellationErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Access denied - integrator does not own transaction',
+    type: CancellationErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Transaction not found',
+    type: CancellationErrorResponseDto,
+  })
+  async cancelTransaction(
+    @Param('transactionId') transactionId: string,
+    @Body() cancelRequest: CancelTransactionRequestDto,
+  ): Promise<ApiResponseDto<CancelTransactionResponseDto>> {
+    const result = await this.transactionsService.cancelTransaction(
+      transactionId,
+      cancelRequest,
+    );
+    return ApiResponseDto.success(
+      result,
+      'Transaction cancelled successfully',
     );
   }
 }
