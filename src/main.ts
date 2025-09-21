@@ -94,22 +94,26 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
 
+  const documentationPath = 'api/documentation';
+
+  // Get port from config service (validated at startup)
+  const port = configService.get<number>('PORT', 8980);
+
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
+  SwaggerModule.setup(documentationPath, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
     },
     customSiteTitle: 'Gbawo Finance API Documentation',
   });
 
-  // Get port from config service (validated at startup)
-  const port = configService.get<number>('PORT')!;
-
   await app.listen(port);
 
-  console.log(`🚀 Application is running on: http://localhost:${port}`);
+  const baseUrl = `http://localhost:${port}`;
+
+  console.log(`🚀 Application is running on: ${baseUrl}`);
   console.log(
-    `📚 API Documentation available at: http://localhost:${port}/api/docs`,
+    `📚 API Documentation available at: ${baseUrl}/${documentationPath}`,
   );
 }
 void bootstrap();
