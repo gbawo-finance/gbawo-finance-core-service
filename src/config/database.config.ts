@@ -5,6 +5,7 @@ import {
   SequelizeOptionsFactory,
 } from '@nestjs/sequelize';
 import { Dialect } from 'sequelize';
+import { ModelCtor } from 'sequelize-typescript';
 
 @Injectable()
 export class DatabaseConfigService implements SequelizeOptionsFactory {
@@ -13,6 +14,8 @@ export class DatabaseConfigService implements SequelizeOptionsFactory {
   createSequelizeOptions(): SequelizeModuleOptions {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
     const isDevelopment = nodeEnv === 'development';
+    const modelImport = require('../models');
+    const models = Object.values(modelImport) as ModelCtor[];
 
     return {
       dialect: this.configService.get<string>(
@@ -25,8 +28,9 @@ export class DatabaseConfigService implements SequelizeOptionsFactory {
       password: this.configService.get<string>('DB_PASSWORD'),
       database: this.configService.get<string>('DB_DATABASE'),
       autoLoadModels: true,
+      models,
       synchronize: isDevelopment,
-      logging: isDevelopment ? console.log : false,
+      logging: false,
     };
   }
 }
