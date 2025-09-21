@@ -98,13 +98,27 @@ async function bootstrap() {
 
   // Get port from config service (validated at startup)
   const port = configService.get<number>('PORT', 8980);
+  const showSwaggerUi =
+    configService.get<string>('SHOW_SWAGGER_UI', 'true').toLowerCase() ===
+    'true';
+  const showSwaggerRaw =
+    configService.get<string>('SHOW_SWAGGER_RAW', 'true').toLowerCase() ===
+    'true';
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(documentationPath, app, document, {
     swaggerOptions: {
       persistAuthorization: true,
+      filter: true,
+      showRequestHeaders: true,
+      showCommonExtensions: true,
+      tryItOutEnabled: true,
     },
     customSiteTitle: 'Gbawo Finance API Documentation',
+    jsonDocumentUrl: `${documentationPath}.json`,
+    yamlDocumentUrl: `${documentationPath}.yaml`,
+    ui: showSwaggerUi,
+    raw: showSwaggerRaw,
   });
 
   await app.listen(port);

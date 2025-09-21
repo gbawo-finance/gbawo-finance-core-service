@@ -9,7 +9,6 @@ export class AppService {
       description: 'Core financial services API for the Gbawo Finance platform',
       endpoints: {
         health: '/health',
-        documentation: '/api/docs',
       },
       timestamp: new Date().toISOString(),
     };
